@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.2.0">
+    <link rel="stylesheet" href="style.css?v=1.2.1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -161,8 +161,8 @@
         <section id="tab-kiblat" class="tab-content">
             <div class="compass-container">
                 <h2 style="font-size:1.2rem; color:var(--accent-gold);">Kompas Arah Kiblat</h2>
-                <p style="font-size:0.85rem; color:var(--text-secondary);">
-                    Halakan peranti anda secara mendatar untuk menentukan arah Kaabah Makkah.
+                <p style="font-size:0.82rem; color:var(--text-secondary);">
+                    Halakan peranti mendatar & pusingkan telefon sehingga jarum menghadap Kaabah.
                 </p>
                 
                 <div class="compass-dial" id="compass-dial">
@@ -174,9 +174,24 @@
                 </div>
 
                 <div class="compass-degree" id="qibla-degree">292.5° NW</div>
-                <p style="font-size:0.78rem; color:var(--text-muted);" id="compass-status">
-                    Sensor kompas aktif. Menggunakan azimuth dari lokasi semasa.
+                <div id="qibla-aligned-badge" style="display:none; margin:8px auto; padding:6px 16px; background:rgba(16, 185, 129, 0.2); border:1px solid #10b981; color:#10b981; border-radius:20px; font-size:0.85rem; font-weight:700; gap:6px; align-items:center;">
+                    <i class="fa-solid fa-circle-check"></i> ✅ TEPAT ARAH KIBLAT!
+                </div>
+
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;" id="compass-status">
+                    Sensor kompas aktif. Sengetkan telefon seperti bentuk 8 jika kompas tersangkut.
                 </p>
+
+                <!-- BUTANG KIBLAT ALTERNATIF TERAMAT MUDAH -->
+                <div style="display:flex; flex-direction:column; gap:10px; width:100%; margin-top:8px;">
+                    <button id="btn-request-compass" class="btn-gps" style="justify-content:center; padding:10px; background:rgba(234, 179, 8, 0.15); border:1px solid var(--accent-gold); color:var(--accent-gold); font-weight:700; display:none;">
+                        <i class="fa-solid fa-compass"></i> Aktifkan Sensor Kompas Peranti
+                    </button>
+
+                    <a href="https://qiblafinder.withgoogle.com/" target="_blank" rel="noopener" class="btn-gps" style="justify-content:center; padding:12px; background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; font-weight:700; text-decoration:none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+                        <i class="fa-solid fa-camera"></i> Guna Kamera AR (Google Qibla Finder)
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -291,7 +306,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.2.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.2.1</span>
         </footer>
     </main>
 
@@ -470,6 +485,6 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.2.0"></script>
+    <script src="app.js?v=1.2.1"></script>
 </body>
 </html>

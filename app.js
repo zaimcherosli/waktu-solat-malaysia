@@ -81,8 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnTestPushNotif: document.getElementById('btn-test-push-notif'),
         // Compass
         compassNeedle: document.getElementById('compass-needle'),
+        compassDial: document.getElementById('compass-dial'),
         qiblaDegree: document.getElementById('qibla-degree'),
+        qiblaAlignedBadge: document.getElementById('qibla-aligned-badge'),
         compassStatus: document.getElementById('compass-status'),
+        btnRequestCompass: document.getElementById('btn-request-compass'),
         // Tasbih
         tasbihPhrase: document.getElementById('tasbih-phrase'),
         tasbihTranslation: document.getElementById('tasbih-translation'),
@@ -642,7 +645,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return R * c;
     }
 
-    // --- 8. KOMPAS KIBLAT & ARRAH KAABAH ---
+    // --- 8. KOMPAS KIBLAT & ARAH KAABAH ---
+    let currentQiblaAngle = 292.5; // Anggaran umum Malaysia (~292.5°)
+
     function calculateQiblaDirection(lat, lng) {
         // Koordinat Kaabah Makkah: 21.4225° N, 39.8262° E
         const kaabaLat = 21.4225 * Math.PI / 180;
@@ -657,28 +662,68 @@ document.addEventListener('DOMContentLoaded', () => {
         let qiblaAngle = Math.atan2(y, x) * 180 / Math.PI;
         qiblaAngle = (qiblaAngle + 360) % 360;
 
-        dom.qiblaDegree.textContent = `${qiblaAngle.toFixed(1)}° Barat Laut`;
+        currentQiblaAngle = qiblaAngle;
+        if (dom.qiblaDegree) dom.qiblaDegree.textContent = `${qiblaAngle.toFixed(1)}° Barat Laut`;
         return qiblaAngle;
     }
 
     function initCompass() {
-        let qiblaAngle = 292.5; // Anggaran umum Malaysia (~292°)
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            if (dom.btnRequestCompass) {
+                dom.btnRequestCompass.style.display = 'inline-flex';
+                dom.btnRequestCompass.addEventListener('click', () => {
+                    DeviceOrientationEvent.requestPermission().then(permState => {
+                        if (permState === 'granted') {
+                            dom.btnRequestCompass.style.display = 'none';
+                            bindOrientationEvents();
+                        } else {
+                            alert('Kebenaran sensor kompas ditolak.');
+                        }
+                    }).catch(console.error);
+                });
+            }
+        } else {
+            bindOrientationEvents();
+        }
+    }
 
+    function bindOrientationEvents() {
         if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientationabsolute', handleOrientation, true) ||
+            window.addEventListener('deviceorientationabsolute', handleOrientation, true);
             window.addEventListener('deviceorientation', handleOrientation, true);
         }
+    }
 
-        function handleOrientation(e) {
-            let heading = e.alpha;
-            if (e.webkitCompassHeading) {
-                heading = e.webkitCompassHeading; // iOS Safari
+    function handleOrientation(e) {
+        let heading = e.alpha;
+        if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
+            heading = e.webkitCompassHeading; // iOS Safari
+        }
+
+        if (heading !== null && heading !== undefined) {
+            let rotation = (currentQiblaAngle - heading) % 360;
+            if (rotation < 0) rotation += 360;
+
+            if (dom.compassNeedle) {
+                dom.compassNeedle.style.transform = `rotate(${rotation}deg)`;
             }
 
-            if (heading !== null && heading !== undefined) {
-                const rotation = qiblaAngle - heading;
-                dom.compassNeedle.style.transform = `rotate(${rotation}deg)`;
-                dom.compassStatus.textContent = `Pusingan kompas peranti aktif (${heading.toFixed(0)}°).`;
+            // Semak ketepatan (toleransi 10 darjah)
+            const isAligned = (rotation <= 10 || rotation >= 350);
+
+            if (isAligned) {
+                if (dom.compassDial) dom.compassDial.classList.add('aligned');
+                if (dom.qiblaAlignedBadge) dom.qiblaAlignedBadge.style.display = 'inline-flex';
+                if (dom.compassStatus) dom.compassStatus.innerHTML = '<b style="color:#10b981;">✅ Tepat Arah Kiblat! Terus hadap ke arah peranti ini.</b>';
+                if (!state.hasVibratedQibla && navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100]);
+                    state.hasVibratedQibla = true;
+                }
+            } else {
+                if (dom.compassDial) dom.compassDial.classList.remove('aligned');
+                if (dom.qiblaAlignedBadge) dom.qiblaAlignedBadge.style.display = 'none';
+                if (dom.compassStatus) dom.compassStatus.textContent = `Arah peranti: ${heading.toFixed(0)}°. Pusingkan telefon sehingga jarum menghadap Kaabah.`;
+                state.hasVibratedQibla = false;
             }
         }
     }

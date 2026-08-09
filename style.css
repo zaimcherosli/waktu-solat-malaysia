@@ -644,7 +644,17 @@ header.top-bar {
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 24px var(--shadow-color);
-    transition: transform 0.2s ease-out;
+    transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.compass-dial.aligned {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.75), inset 0 0 25px rgba(16, 185, 129, 0.25) !important;
+}
+
+.compass-dial.aligned .needle-north {
+    border-bottom-color: #10b981 !important;
+    filter: drop-shadow(0 0 10px #10b981);
 }
 
 .compass-needle {
