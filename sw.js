@@ -2,7 +2,7 @@
    PWA SERVICE WORKER - CACHING & OFFLINE ENGINE
    ========================================================================== */
 
-const CACHE_NAME = 'waktu-solat-v1.2.3';
+const CACHE_NAME = 'waktu-solat-v1.2.4';
 const STATIC_ASSETS = [
   './',
   './index.html',

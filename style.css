@@ -477,13 +477,19 @@ header.top-bar {
 }
 
 /* --- FOOTER CREDIT WATERMARK --- */
+#tab-solat.active {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 160px);
+}
+
 .app-credit-footer {
     text-align: center;
     font-size: 0.78rem;
     color: var(--text-muted);
-    margin-top: 24px;
-    margin-bottom: 6px;
-    padding-bottom: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 16px 0;
     letter-spacing: 0.3px;
     display: flex;
     flex-direction: row;

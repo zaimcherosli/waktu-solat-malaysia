@@ -116,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadPrayerData(state.currentZone);
         setupEventListeners();
         startLiveClock();
-        initCompass();
         updateTasbihUI();
         registerServiceWorker();
     }
@@ -659,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return R * c;
     }
 
-    // --- 8. KOMPAS KIBLAT & ARAH KAABAH ---
+    // --- 8. ARAH KIBLAT (GOOGLE AR FINDER & DEGREE) ---
     let currentQiblaAngle = 292.5; // Anggaran umum Malaysia (~292.5°)
 
     function calculateQiblaDirection(lat, lng) {
@@ -679,67 +678,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentQiblaAngle = qiblaAngle;
         if (dom.qiblaDegree) dom.qiblaDegree.textContent = `${qiblaAngle.toFixed(1)}° Barat Laut`;
         return qiblaAngle;
-    }
-
-    function initCompass() {
-        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            if (dom.btnRequestCompass) {
-                dom.btnRequestCompass.style.display = 'inline-flex';
-                dom.btnRequestCompass.addEventListener('click', () => {
-                    DeviceOrientationEvent.requestPermission().then(permState => {
-                        if (permState === 'granted') {
-                            dom.btnRequestCompass.style.display = 'none';
-                            bindOrientationEvents();
-                        } else {
-                            alert('Kebenaran sensor kompas ditolak.');
-                        }
-                    }).catch(console.error);
-                });
-            }
-        } else {
-            bindOrientationEvents();
-        }
-    }
-
-    function bindOrientationEvents() {
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-            window.addEventListener('deviceorientation', handleOrientation, true);
-        }
-    }
-
-    function handleOrientation(e) {
-        let heading = e.alpha;
-        if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
-            heading = e.webkitCompassHeading; // iOS Safari
-        }
-
-        if (heading !== null && heading !== undefined) {
-            let rotation = (currentQiblaAngle - heading) % 360;
-            if (rotation < 0) rotation += 360;
-
-            if (dom.compassNeedle) {
-                dom.compassNeedle.style.transform = `rotate(${rotation}deg)`;
-            }
-
-            // Semak ketepatan (toleransi 10 darjah)
-            const isAligned = (rotation <= 10 || rotation >= 350);
-
-            if (isAligned) {
-                if (dom.compassDial) dom.compassDial.classList.add('aligned');
-                if (dom.qiblaAlignedBadge) dom.qiblaAlignedBadge.style.display = 'inline-flex';
-                if (dom.compassStatus) dom.compassStatus.innerHTML = '<b style="color:#10b981;">✅ Tepat Arah Kiblat! Terus hadap ke arah peranti ini.</b>';
-                if (!state.hasVibratedQibla && navigator.vibrate) {
-                    navigator.vibrate([100, 50, 100]);
-                    state.hasVibratedQibla = true;
-                }
-            } else {
-                if (dom.compassDial) dom.compassDial.classList.remove('aligned');
-                if (dom.qiblaAlignedBadge) dom.qiblaAlignedBadge.style.display = 'none';
-                if (dom.compassStatus) dom.compassStatus.textContent = `Arah peranti: ${heading.toFixed(0)}°. Pusingkan telefon sehingga jarum menghadap Kaabah.`;
-                state.hasVibratedQibla = false;
-            }
-        }
     }
 
     // --- 9. TASBIH DIGITAL ---
