@@ -33,6 +33,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Prepare dist folder
+        run: |
+          mkdir -p dist
+          cp index.html style.css app.js jakim-zones.js sw.js manifest.json dist/
+          cp -r audio icons dist/
+
       - name: Add Capacitor Android Platform & Build APK
         run: |
           npx cap add android
