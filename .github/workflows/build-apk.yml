@@ -35,8 +35,8 @@ jobs:
 
       - name: Add Capacitor Android Platform & Build APK
         run: |
-          npx cap init "Solat Malaysia" "com.kwikezee.waktusolat" --web-dir="./"
           npx cap add android
+          npx cap copy android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
