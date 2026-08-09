@@ -198,7 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playAzanAudio() {
-        if (!dom.azanAudio) return;
+        if (!dom.azanAudio) {
+            playSynthesizedAzanChime();
+            return;
+        }
         try {
             dom.azanAudio.currentTime = 0;
             const playPromise = dom.azanAudio.play();
@@ -207,15 +210,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-volume-high fa-spin"></i> Dimainkan...';
                 setTimeout(() => {
                     if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
-                }, 5000);
+                }, 6000);
             }
 
             if (playPromise !== undefined) {
                 playPromise.catch(err => {
                     console.log('Audio playback info:', err);
+                    playSynthesizedAzanChime();
                 });
             }
-        } catch (e) {}
+        } catch (e) {
+            playSynthesizedAzanChime();
+        }
+    }
+
+    function playSynthesizedAzanChime() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const notes = [440, 554.37, 659.25, 880];
+            notes.forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.25, ctx.currentTime + idx * 0.35);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.35 + 1.0);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + idx * 0.35);
+                osc.stop(ctx.currentTime + idx * 0.35 + 1.0);
+            });
+        } catch(e){}
     }
 
     function playAzanNotification(prayerName) {
