@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentZone: localStorage.getItem('jakim_zone') || 'WLY01',
         theme: localStorage.getItem('app_theme') || 'emerald',
         audioEnabled: localStorage.getItem('audio_enabled') !== 'false',
+        prayerNotifs: JSON.parse(localStorage.getItem('prayer_notifs') || '{"fajr":true,"syuruk":false,"dhuhr":true,"asr":true,"maghrib":true,"isha":true}'),
         prayerData: null,
         userLocation: null,
         deferredInstallPrompt: null,
@@ -79,6 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnToggleNotifPerm: document.getElementById('btn-toggle-notif-perm'),
         btnTestAzanAudio: document.getElementById('btn-test-azan-audio'),
         btnTestPushNotif: document.getElementById('btn-test-push-notif'),
+        toggles: {
+            fajr: document.getElementById('toggle-notif-fajr'),
+            syuruk: document.getElementById('toggle-notif-syuruk'),
+            dhuhr: document.getElementById('toggle-notif-dhuhr'),
+            asr: document.getElementById('toggle-notif-asr'),
+            maghrib: document.getElementById('toggle-notif-maghrib'),
+            isha: document.getElementById('toggle-notif-isha')
+        },
         // Compass
         compassNeedle: document.getElementById('compass-needle'),
         compassDial: document.getElementById('compass-dial'),
@@ -312,7 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e){}
     }
 
-    function playAzanNotification(prayerName) {
+    function playAzanNotification(prayerKey, prayerName) {
+        if (state.prayerNotifs && state.prayerNotifs[prayerKey] === false) {
+            console.log(`Pemberitahuan bagi ${prayerName} (${prayerKey}) telah dinyahaktifkan oleh pengguna.`);
+            return;
+        }
+
         if (state.audioEnabled) {
             playAzanAudio();
         }
@@ -516,12 +530,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const todayStr = getLocalDateString(now);
 
         const list = [
-            { name: 'Subuh', timeStr: state.prayerData.fajr, card: dom.cards.fajr },
-            { name: 'Syuruk', timeStr: state.prayerData.syuruk, card: dom.cards.syuruk },
-            { name: 'Zohor', timeStr: state.prayerData.dhuhr, card: dom.cards.dhuhr },
-            { name: 'Asar', timeStr: state.prayerData.asr, card: dom.cards.asr },
-            { name: 'Maghrib', timeStr: state.prayerData.maghrib, card: dom.cards.maghrib },
-            { name: 'Isyak', timeStr: state.prayerData.isha, card: dom.cards.isha }
+            { key: 'fajr', name: 'Subuh', timeStr: state.prayerData.fajr, card: dom.cards.fajr },
+            { key: 'syuruk', name: 'Syuruk', timeStr: state.prayerData.syuruk, card: dom.cards.syuruk },
+            { key: 'dhuhr', name: 'Zohor', timeStr: state.prayerData.dhuhr, card: dom.cards.dhuhr },
+            { key: 'asr', name: 'Asar', timeStr: state.prayerData.asr, card: dom.cards.asr },
+            { key: 'maghrib', name: 'Maghrib', timeStr: state.prayerData.maghrib, card: dom.cards.maghrib },
+            { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha, card: dom.cards.isha }
         ];
 
         // Buang highlight aktif terdahulu
@@ -566,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const notifKey = `${nextPrayer.name}_${getLocalDateString(nextPrayer.targetDate)}_${nextPrayer.timeStr}`;
         if (diffMs <= 2000 && diffMs >= 0 && state.lastNotificationKey !== notifKey) {
             state.lastNotificationKey = notifKey;
-            playAzanNotification(nextPrayer.name);
+            playAzanNotification(nextPrayer.key, nextPrayer.name);
         }
 
         const totalSec = Math.max(0, Math.floor(diffMs / 1000));
@@ -842,6 +856,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.btnRequestNotif) dom.btnRequestNotif.addEventListener('click', () => openModal(dom.modalSettings));
         if (dom.btnOpenSettings) dom.btnOpenSettings.addEventListener('click', () => openModal(dom.modalSettings));
         if (dom.btnCloseSettings) dom.btnCloseSettings.addEventListener('click', () => closeModal(dom.modalSettings));
+
+        // Toggle Notifikasi Solat Individu
+        if (dom.toggles) {
+            Object.keys(dom.toggles).forEach(key => {
+                const el = dom.toggles[key];
+                if (el) {
+                    el.checked = state.prayerNotifs[key] !== false;
+                    el.addEventListener('change', (e) => {
+                        state.prayerNotifs[key] = e.target.checked;
+                        localStorage.setItem('prayer_notifs', JSON.stringify(state.prayerNotifs));
+                    });
+                }
+            });
+        }
         
         const btnModalOpenZone = document.getElementById('btn-modal-open-zone');
         if (btnModalOpenZone) {

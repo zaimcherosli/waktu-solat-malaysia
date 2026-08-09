@@ -933,6 +933,35 @@ nav.bottom-nav {
     animation: fadeIn 0.25s ease;
 }
 
+.modal-overl.pwa-banner.active {
+    display: flex;
+    animation: slideUp 0.3s ease;
+}
+
+/* PANEL TETAPAN TOGGLE SOLAT INDIVIDU */
+.toggle-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-card-hover);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.toggle-setting-row:hover {
+    background: var(--bg-card-active);
+}
+
+.prayer-toggle-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-emerald);
+    cursor: pointer;
+}
+
 .modal-body {
     background: var(--bg-main);
     border: 1px solid var(--border-active);
