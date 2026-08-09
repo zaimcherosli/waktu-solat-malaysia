@@ -659,33 +659,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // GPS Button
-        dom.btnGps.addEventListener('click', detectGPSLocation);
+        if (dom.btnGps) dom.btnGps.addEventListener('click', detectGPSLocation);
 
         // Zone Modal
-        dom.btnOpenZoneModal.addEventListener('click', () => {
-            renderZoneList();
-            openModal(dom.modalZone);
-        });
-        dom.btnCloseZoneModal.addEventListener('click', () => closeModal(dom.modalZone));
-        dom.zoneSearchInput.addEventListener('input', (e) => renderZoneList(e.target.value));
+        if (dom.btnOpenZoneModal) {
+            dom.btnOpenZoneModal.addEventListener('click', () => {
+                renderZoneList();
+                openModal(dom.modalZone);
+            });
+        }
+        if (dom.btnCloseZoneModal) dom.btnCloseZoneModal.addEventListener('click', () => closeModal(dom.modalZone));
+        if (dom.zoneSearchInput) dom.zoneSearchInput.addEventListener('input', (e) => renderZoneList(e.target.value));
 
         // Theme Modal
-        dom.btnOpenThemeModal.addEventListener('click', () => openModal(dom.modalTheme));
-        dom.btnCloseThemeModal.addEventListener('click', () => closeModal(dom.modalTheme));
-        dom.themeCards.forEach(card => {
-            card.addEventListener('click', () => {
-                applyTheme(card.dataset.themeVal);
-                closeModal(dom.modalTheme);
+        if (dom.btnOpenThemeModal) dom.btnOpenThemeModal.addEventListener('click', () => openModal(dom.modalTheme));
+        if (dom.btnCloseThemeModal) dom.btnCloseThemeModal.addEventListener('click', () => closeModal(dom.modalTheme));
+        if (dom.themeCards) {
+            dom.themeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    applyTheme(card.dataset.themeVal);
+                    closeModal(dom.modalTheme);
+                });
             });
-        });
+        }
 
         // Audio Button
-        dom.btnToggleAudio.addEventListener('click', toggleAudio);
+        if (dom.btnToggleAudio) dom.btnToggleAudio.addEventListener('click', toggleAudio);
 
         // Tasbih
-        dom.btnTasbihCount.addEventListener('click', incrementTasbih);
-        dom.btnTasbihReset.addEventListener('click', resetTasbih);
-        dom.btnTasbihSwitch.addEventListener('click', switchTasbihPhrase);
+        if (dom.btnTasbihCount) dom.btnTasbihCount.addEventListener('click', incrementTasbih);
+        if (dom.btnTasbihReset) dom.btnTasbihReset.addEventListener('click', resetTasbih);
+        if (dom.btnTasbihSwitch) dom.btnTasbihSwitch.addEventListener('click', switchTasbihPhrase);
 
         // Notification & Settings Modal
         if (dom.btnRequestNotif) dom.btnRequestNotif.addEventListener('click', () => openModal(dom.modalSettings));
