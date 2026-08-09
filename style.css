@@ -486,9 +486,11 @@ header.top-bar {
     padding-bottom: 8px;
     letter-spacing: 0.3px;
     display: flex;
-    flex-direction: column;
-    gap: 3px;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    white-space: nowrap;
+    gap: 4px;
 }
 
 .app-credit-footer a {
