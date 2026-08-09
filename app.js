@@ -232,7 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function sendPushNotification(title, body) {
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            return;
+        }
+        if ('serviceWorker' in navigator) {
             navigator.serviceWorker.ready.then(registration => {
                 registration.showNotification(title, {
                     body: body,
@@ -240,12 +243,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     badge: 'icons/icon-192.png',
                     vibrate: [300, 100, 300, 100, 500]
                 });
+            }).catch(() => {
+                try {
+                    new Notification(title, {
+                        body: body,
+                        icon: 'icons/icon-192.png'
+                    });
+                } catch(e){}
             });
-        } else if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification(title, {
-                body: body,
-                icon: 'icons/icon-192.png'
-            });
+        } else {
+            try {
+                new Notification(title, {
+                    body: body,
+                    icon: 'icons/icon-192.png'
+                });
+            } catch(e){}
         }
     }
 
@@ -312,6 +324,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getLocalDateString(d = new Date()) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     // --- 3. FETCH API JAKIM E-SOLAT (WITH FALLBACK ENGINE) ---
     async function loadPrayerData(zoneCode) {
         const zoneInfo = JAKIM_ZONES.find(z => z.code === zoneCode) || JAKIM_ZONES[0];
@@ -323,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.zoneNameDisplay) dom.zoneNameDisplay.textContent = `${zoneInfo.state} - ${zoneInfo.name}`;
 
         // Semak LocalStorage Cache dahulu
-        const cacheKey = `prayer_cache_${zoneCode}_${new Date().toISOString().slice(0, 10)}`;
+        const cacheKey = `prayer_cache_${zoneCode}_${getLocalDateString()}`;
         const cachedData = localStorage.getItem(cacheKey);
 
         if (cachedData) {
@@ -382,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return {
                 prayerTime: [{
                     hijri: fallbackJson.hijri || '',
-                    date: p.date || new Date().toISOString().slice(0, 10),
+                    date: p.date || getLocalDateString(),
                     fajr: formatTimeString(p.fajr),
                     syuruk: formatTimeString(p.syuruk),
                     dhuhr: formatTimeString(p.dhuhr),
@@ -406,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateMockPrayerTimes() {
         return {
             hijri: '1447-02-25',
-            date: new Date().toISOString().slice(0, 10),
+            date: getLocalDateString(),
             fajr: '05:54:00',
             syuruk: '07:12:00',
             dhuhr: '13:22:00',
@@ -491,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.prayerData) return;
 
         const now = new Date();
-        const todayStr = now.toISOString().slice(0, 10);
+        const todayStr = getLocalDateString(now);
 
         const list = [
             { name: 'Subuh', timeStr: state.prayerData.fajr, card: dom.cards.fajr },
@@ -523,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nextPrayer = list[0];
             const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+            const tomorrowStr = getLocalDateString(tomorrow);
             nextPrayer.targetDate = new Date(`${tomorrowStr}T${nextPrayer.timeStr}`);
         } else {
             nextPrayer.targetDate = new Date(`${todayStr}T${nextPrayer.timeStr}`);
@@ -539,7 +558,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Pengiraan Perbezaan Masa (Countdown)
         const diffMs = nextPrayer.targetDate - now;
-        if (diffMs <= 1000 && diffMs >= -1000) {
+
+        // Pemicu Notifikasi & Azan apabila masuk waktu solat (toleransi 0 hingga 2000ms)
+        const notifKey = `${nextPrayer.name}_${getLocalDateString(nextPrayer.targetDate)}_${nextPrayer.timeStr}`;
+        if (diffMs <= 2000 && diffMs >= 0 && state.lastNotificationKey !== notifKey) {
+            state.lastNotificationKey = notifKey;
             playAzanNotification(nextPrayer.name);
         }
 
