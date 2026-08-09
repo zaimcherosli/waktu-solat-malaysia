@@ -139,8 +139,60 @@ document.addEventListener('DOMContentLoaded', () => {
         state.audioEnabled = !state.audioEnabled;
         localStorage.setItem('audio_enabled', state.audioEnabled);
         updateAudioButton();
-        if (state.audioEnabled) {
+        if (!state.audioEnabled) {
+            stopAzanAudio();
+        } else {
             requestNotificationPermission();
+        }
+    }
+
+    function stopAzanAudio() {
+        if (dom.azanAudio) {
+            try {
+                dom.azanAudio.pause();
+                dom.azanAudio.currentTime = 0;
+            } catch (e) {}
+        }
+        if (dom.btnTestAzanAudio) {
+            dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
+            dom.btnTestAzanAudio.classList.remove('btn-stop-active');
+        }
+    }
+
+    function toggleAzanPlayback() {
+        if (dom.azanAudio && !dom.azanAudio.paused) {
+            stopAzanAudio();
+        } else {
+            playAzanAudio();
+        }
+    }
+
+    function playAzanAudio() {
+        if (!dom.azanAudio) {
+            playSynthesizedAzanChime();
+            return;
+        }
+        try {
+            dom.azanAudio.currentTime = 0;
+            const playPromise = dom.azanAudio.play();
+            
+            if (dom.btnTestAzanAudio) {
+                dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-square"></i> Hentikan Azan';
+                dom.btnTestAzanAudio.classList.add('btn-stop-active');
+            }
+
+            if (dom.azanAudio) {
+                dom.azanAudio.onended = stopAzanAudio;
+            }
+
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log('Audio playback info:', err);
+                    playSynthesizedAzanChime();
+                });
+            }
+        } catch (e) {
+            playSynthesizedAzanChime();
         }
     }
 
@@ -735,7 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.btnEnableNotifBanner) dom.btnEnableNotifBanner.addEventListener('click', requestNotificationPermission);
         if (dom.btnToggleNotifPerm) dom.btnToggleNotifPerm.addEventListener('click', requestNotificationPermission);
         
-        if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.addEventListener('click', playAzanAudio);
+        if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.addEventListener('click', toggleAzanPlayback);
         if (dom.btnTestPushNotif) {
             dom.btnTestPushNotif.addEventListener('click', () => {
                 playAzanAudio();
