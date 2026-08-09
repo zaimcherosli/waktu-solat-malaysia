@@ -504,6 +504,20 @@ header.top-bar {
     color: var(--text-primary);
 }
 
+.version-badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent-emerald);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.4px;
+}
+
 .app-version-text {
     font-size: 0.68rem;
     color: var(--text-muted);
