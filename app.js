@@ -198,12 +198,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playAzanAudio() {
+        if (!dom.azanAudio) return;
         try {
             dom.azanAudio.currentTime = 0;
-            dom.azanAudio.play().catch(err => {
-                console.log('Audio autoplay blocked:', err);
-                alert('Klik skrin peranti anda untuk membenarkan audio azan dimainkan.');
-            });
+            const playPromise = dom.azanAudio.play();
+            
+            if (dom.btnTestAzanAudio) {
+                dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-volume-high fa-spin"></i> Dimainkan...';
+                setTimeout(() => {
+                    if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
+                }, 5000);
+            }
+
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log('Audio playback info:', err);
+                });
+            }
         } catch (e) {}
     }
 
