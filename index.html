@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.2.2">
+    <link rel="stylesheet" href="style.css?v=1.2.3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -297,7 +297,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.2.2</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.2.3</span>
         </footer>
     </main>
 
@@ -405,31 +405,49 @@
                     </div>
                     <div style="font-size:0.78rem; color:var(--text-secondary);">Pilih waktu solat yang anda mahu terima pemberitahuan & alunan Azan:</div>
                     
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:2px;">
-                        <label class="toggle-setting-row">
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-cloud-sun" style="color:#eab308; width:16px;"></i> Subuh</span>
-                            <input type="checkbox" id="toggle-notif-fajr" checked class="prayer-toggle-checkbox">
-                        </label>
-                        <label class="toggle-setting-row">
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-fajr" checked class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-sun" style="color:#f97316; width:16px;"></i> Syuruk</span>
-                            <input type="checkbox" id="toggle-notif-syuruk" class="prayer-toggle-checkbox">
-                        </label>
-                        <label class="toggle-setting-row">
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-syuruk" class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-sun" style="color:#eab308; width:16px;"></i> Zohor</span>
-                            <input type="checkbox" id="toggle-notif-dhuhr" checked class="prayer-toggle-checkbox">
-                        </label>
-                        <label class="toggle-setting-row">
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-dhuhr" checked class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-cloud-sun" style="color:#38bdf8; width:16px;"></i> Asar</span>
-                            <input type="checkbox" id="toggle-notif-asr" checked class="prayer-toggle-checkbox">
-                        </label>
-                        <label class="toggle-setting-row">
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-asr" checked class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-moon" style="color:#f43f5e; width:16px;"></i> Maghrib</span>
-                            <input type="checkbox" id="toggle-notif-maghrib" checked class="prayer-toggle-checkbox">
-                        </label>
-                        <label class="toggle-setting-row">
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-maghrib" checked class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-setting-row">
                             <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem;"><i class="fa-solid fa-moon" style="color:#818cf8; width:16px;"></i> Isyak</span>
-                            <input type="checkbox" id="toggle-notif-isha" checked class="prayer-toggle-checkbox">
-                        </label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-notif-isha" checked class="prayer-toggle-checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -500,6 +518,6 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.2.2"></script>
+    <script src="app.js?v=1.2.3"></script>
 </body>
 </html>
