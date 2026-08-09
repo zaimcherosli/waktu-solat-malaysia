@@ -236,8 +236,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. FETCH API JAKIM E-SOLAT (WITH FALLBACK ENGINE) ---
     async function loadPrayerData(zoneCode) {
         const zoneInfo = JAKIM_ZONES.find(z => z.code === zoneCode) || JAKIM_ZONES[0];
-        dom.zoneCodeDisplay.innerHTML = `${zoneInfo.code} <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>`;
-        dom.zoneNameDisplay.textContent = `${zoneInfo.state} - ${zoneInfo.name}`;
+        const headerZoneText = document.getElementById('header-zone-text');
+        const modalZoneCode = document.getElementById('modal-display-zone-code');
+        if (headerZoneText) headerZoneText.textContent = zoneInfo.code;
+        if (modalZoneCode) modalZoneCode.textContent = `${zoneInfo.code} - ${zoneInfo.state}`;
+        if (dom.zoneCodeDisplay) dom.zoneCodeDisplay.innerHTML = `${zoneInfo.code} <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;"></i>`;
+        if (dom.zoneNameDisplay) dom.zoneNameDisplay.textContent = `${zoneInfo.state} - ${zoneInfo.name}`;
 
         // Semak LocalStorage Cache dahulu
         const cacheKey = `prayer_cache_${zoneCode}_${new Date().toISOString().slice(0, 10)}`;
@@ -687,6 +691,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.btnRequestNotif) dom.btnRequestNotif.addEventListener('click', () => openModal(dom.modalSettings));
         if (dom.btnOpenSettings) dom.btnOpenSettings.addEventListener('click', () => openModal(dom.modalSettings));
         if (dom.btnCloseSettings) dom.btnCloseSettings.addEventListener('click', () => closeModal(dom.modalSettings));
+        
+        const btnModalOpenZone = document.getElementById('btn-modal-open-zone');
+        if (btnModalOpenZone) {
+            btnModalOpenZone.addEventListener('click', () => {
+                closeModal(dom.modalSettings);
+                renderZoneList();
+                openModal(dom.modalZone);
+            });
+        }
+
         if (dom.btnEnableNotifBanner) dom.btnEnableNotifBanner.addEventListener('click', requestNotificationPermission);
         if (dom.btnToggleNotifPerm) dom.btnToggleNotifPerm.addEventListener('click', requestNotificationPermission);
         

@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.0.3">
+    <link rel="stylesheet" href="style.css?v=1.0.5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -31,6 +31,9 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="btn-zone-badge" id="display-zone-code" title="Zon JAKIM (Klik untuk tukar)">
+                    <i class="fa-solid fa-location-dot"></i> <span id="header-zone-text">WLY01</span> <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;"></i>
+                </button>
                 <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
                     <i class="fa-solid fa-bell" id="notif-icon"></i>
                 </button>
@@ -49,27 +52,6 @@
 
     <!-- CONTAINER UTAMA -->
     <main class="app-container">
-
-        <!-- KAD LOKASI & ZON JAKIM -->
-        <section class="location-card">
-            <div class="zone-info">
-                <div class="zone-header">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Zon JAKIM</span>
-                </div>
-                <div class="zone-name" id="display-zone-code">
-                    WLY01 <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>
-                </div>
-                <div class="zone-details" id="display-zone-name">
-                    Kuala Lumpur, Putrajaya
-                </div>
-            </div>
-            <div class="location-btn-group">
-                <button class="btn-gps" id="btn-auto-gps">
-                    <i class="fa-solid fa-location-crosshairs"></i> GPS Auto
-                </button>
-            </div>
-        </section>
 
         <!-- TAB 1: WAKTU SOLAT (MAIN VIEW) -->
         <section id="tab-solat" class="tab-content active">
@@ -310,6 +292,10 @@
             </div>
         </section>
 
+        <!-- FOOTER WATERMARK CREDIT -->
+        <footer class="app-credit-footer">
+            Design by <a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>
+        </footer>
     </main>
 
     <!-- BOTTOM NAVIGATION -->
@@ -356,14 +342,35 @@
         </button>
     </div>
 
-    <!-- MODAL TETAPAN NOTIFIKASI & UJI AZAN -->
+    <!-- MODAL TETAPAN NOTIFIKASI & ZON JAKIM -->
     <div class="modal-overlay" id="modal-settings">
         <div class="modal-body">
             <div class="modal-header">
-                <div class="modal-title">Tetapan Notifikasi & Azan</div>
+                <div class="modal-title">Tetapan Aplikasi & Zon JAKIM</div>
                 <button class="btn-icon" id="btn-close-settings"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
+                <!-- KAD LOKASI & ZON JAKIM IN SETTINGS -->
+                <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                    <div style="min-width:0; flex:1;">
+                        <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-location-dot"></i> <span id="modal-display-zone-code">WLY01</span>
+                        </div>
+                        <div style="font-size:0.78rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="display-zone-name">
+                            Kuala Lumpur, Putrajaya
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button class="btn-gps" id="btn-modal-open-zone" style="padding:6px 10px; font-size:0.75rem;">
+                            Tukar Zon
+                        </button>
+                        <button class="btn-gps" id="btn-auto-gps" style="padding:6px 10px; font-size:0.75rem;">
+                            <i class="fa-solid fa-location-crosshairs"></i> GPS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NOTIFIKASI STATUS -->
                 <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
                     <div>
                         <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem;">Status Push Notification</div>
@@ -374,6 +381,7 @@
                     </button>
                 </div>
 
+                <!-- UJI AZAN & NOTIFIKASI -->
                 <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:10px;">
                     <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem;">Uji Alunan Azan & Notifikasi</div>
                     <div style="font-size:0.78rem; color:var(--text-secondary);">Tekan butang di bawah untuk menguji alunan audio Azan Makkah dan paparan notifikasi telefon.</div>
@@ -454,6 +462,6 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.0.4"></script>
+    <script src="app.js?v=1.0.5"></script>
 </body>
 </html>
