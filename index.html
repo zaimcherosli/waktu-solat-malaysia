@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="emerald">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Waktu Solat Malaysia - JAKIM API PWA</title>
+    <meta name="description" content="Aplikasi Waktu Solat Malaysia berasaskan data rasmi JAKIM e-Solat dengan mod offline PWA, pengesanan lokasi GPS, kompas kiblat, dan tasbih digital.">
+    <meta name="theme-color" content="#06140e">
+    
+    <!-- PWA Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Stylesheet & Icons -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header class="top-bar">
+        <div class="header-inner">
+            <div class="brand-title">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-mosque"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Solat Malaysia</h1>
+                    <span id="current-live-time">--:--:--</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
+                    <i class="fa-solid fa-bell" id="notif-icon"></i>
+                </button>
+                <button class="btn-icon" id="btn-open-theme" title="Tukar Tema Visual">
+                    <i class="fa-solid fa-palette"></i>
+                </button>
+                <button class="btn-icon" id="btn-toggle-audio" title="Audio Azan">
+                    <i class="fa-solid fa-volume-high" id="audio-icon"></i>
+                </button>
+                <button class="btn-icon" id="btn-open-settings" title="Tetapan & Zon">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER UTAMA -->
+    <main class="app-container">
+
+        <!-- KAD LOKASI & ZON JAKIM -->
+        <section class="location-card">
+            <div class="zone-info">
+                <div class="zone-header">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Zon JAKIM</span>
+                </div>
+                <div class="zone-name" id="display-zone-code">
+                    WLY01 <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>
+                </div>
+                <div class="zone-details" id="display-zone-name">
+                    Kuala Lumpur, Putrajaya
+                </div>
+            </div>
+            <div class="location-btn-group">
+                <button class="btn-gps" id="btn-auto-gps">
+                    <i class="fa-solid fa-location-crosshairs"></i> GPS Auto
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 1: WAKTU SOLAT (MAIN VIEW) -->
+        <section id="tab-solat" class="tab-content active">
+            <!-- HERO BANNER SOLAT SETERUSNYA -->
+            <div class="hero-card">
+                <div class="date-bar">
+                    <span id="display-gregorian-date">---, -- ---- ----</span>
+                    <span id="display-hijri-date" class="arabic-font" style="font-size:0.95rem; font-weight:700;">--- ---- ----</span>
+                </div>
+                
+                <div class="next-prayer-badge">WAKTU SOLAT SETERUSNYA</div>
+                <div class="next-prayer-name" id="display-next-prayer-name">---</div>
+
+                <!-- COUNTDOWN TIMER -->
+                <div class="countdown-container">
+                    <div class="countdown-box">
+                        <div class="timer-unit">
+                            <div class="timer-value" id="cd-hours">00</div>
+                            <div class="timer-label">Jam</div>
+                        </div>
+                        <div class="timer-sep">:</div>
+                        <div class="timer-unit">
+                            <div class="timer-value" id="cd-minutes">00</div>
+                            <div class="timer-label">Minit</div>
+                        </div>
+                        <div class="timer-sep">:</div>
+                        <div class="timer-unit">
+                            <div class="timer-value" id="cd-seconds">00</div>
+                            <div class="timer-label">Saat</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="next-time-exact">
+                    Masuk waktu pada <span id="display-next-prayer-time">--:--</span>
+                </div>
+            </div>
+
+            <!-- GRID 6 WAKTU SOLAT -->
+            <div class="prayer-grid">
+                <div class="prayer-card" id="card-fajr">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-cloud-moon"></i></div>
+                            <div class="prayer-title">Subuh</div>
+                        </div>
+                        <div class="prayer-arabic">الفجر</div>
+                    </div>
+                    <div class="prayer-time" id="time-fajr">--:--</div>
+                </div>
+
+                <div class="prayer-card" id="card-syuruk">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-sun"></i></div>
+                            <div class="prayer-title">Syuruk</div>
+                        </div>
+                        <div class="prayer-arabic">الشروق</div>
+                    </div>
+                    <div class="prayer-time" id="time-syuruk">--:--</div>
+                </div>
+
+                <div class="prayer-card" id="card-dhuhr">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+                            <div class="prayer-title">Zohor</div>
+                        </div>
+                        <div class="prayer-arabic">الظهر</div>
+                    </div>
+                    <div class="prayer-time" id="time-dhuhr">--:--</div>
+                </div>
+
+                <div class="prayer-card" id="card-asr">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+                            <div class="prayer-title">Asar</div>
+                        </div>
+                        <div class="prayer-arabic">العصر</div>
+                    </div>
+                    <div class="prayer-time" id="time-asr">--:--</div>
+                </div>
+
+                <div class="prayer-card" id="card-maghrib">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                            <div class="prayer-title">Maghrib</div>
+                        </div>
+                        <div class="prayer-arabic">المغرب</div>
+                    </div>
+                    <div class="prayer-time" id="time-maghrib">--:--</div>
+                </div>
+
+                <div class="prayer-card" id="card-isha">
+                    <div class="prayer-head">
+                        <div class="prayer-head-left">
+                            <div class="prayer-icon"><i class="fa-solid fa-moon"></i></div>
+                            <div class="prayer-title">Isyak</div>
+                        </div>
+                        <div class="prayer-arabic">العشاء</div>
+                    </div>
+                    <div class="prayer-time" id="time-isha">--:--</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KOMPAS KIBLAT -->
+        <section id="tab-kiblat" class="tab-content">
+            <div class="compass-container">
+                <h2 style="font-size:1.2rem; color:var(--accent-gold);">Kompas Arah Kiblat</h2>
+                <p style="font-size:0.85rem; color:var(--text-secondary);">
+                    Halakan peranti anda secara mendatar untuk menentukan arah Kaabah Makkah.
+                </p>
+                
+                <div class="compass-dial" id="compass-dial">
+                    <div class="kaaba-icon"><i class="fa-solid fa-kaaba"></i></div>
+                    <div class="compass-needle" id="compass-needle">
+                        <div class="needle-north"></div>
+                        <div class="needle-south"></div>
+                    </div>
+                </div>
+
+                <div class="compass-degree" id="qibla-degree">292.5° NW</div>
+                <p style="font-size:0.78rem; color:var(--text-muted);" id="compass-status">
+                    Sensor kompas aktif. Menggunakan azimuth dari lokasi semasa.
+                </p>
+            </div>
+        </section>
+
+        <!-- TAB 3: TASBIH DIGITAL -->
+        <section id="tab-tasbih" class="tab-content">
+            <div class="tasbih-box">
+                <h2 style="font-size:1.2rem; color:var(--accent-gold);">Tasbih Digital</h2>
+                <div class="arabic-font" id="tasbih-phrase" style="font-size:1.45rem; color:var(--text-primary); font-family:var(--font-uthmani);">
+                    سُبْحَانَ اللَّهِ
+                </div>
+                <p id="tasbih-translation" style="font-size:0.85rem; color:var(--text-secondary);">
+                    Subhanallah (Maha Suci Allah)
+                </p>
+
+                <div class="tasbih-count-display" id="tasbih-counter">0</div>
+
+                <button class="btn-tasbih-tap" id="btn-tasbih-count">
+                    TEKAN (ZIKIR)
+                </button>
+
+                <div class="tasbih-controls">
+                    <button class="btn-icon" id="btn-tasbih-reset" title="Reset Kaunter">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button class="btn-icon" id="btn-tasbih-switch" title="Tukar Kalimah">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: DOA HARIAN -->
+        <section id="tab-doa" class="tab-content">
+            <div class="doa-list">
+                <div class="doa-card">
+                    <div class="doa-header">
+                        <div class="doa-badge"><i class="fa-solid fa-book-open"></i> Surah Al-Fatihah: 2 & Doa Ma'thur</div>
+                        <div class="doa-title">Pujian & Doa Selepas Solat Fardhu</div>
+                    </div>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝ حَمْدً۬ا يُوَافِى نِعَمَهُۥ وَيُكَافِئُ مَزِيدَهُۥ</div>
+                    </div>
+                    <div class="doa-footer">
+                        <div class="doa-translation">
+                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
+                            Segala puji bagi Allah Tuhan pentadbir seluruh alam, pujian yang melengkapi nikmat-Nya.
+                        </div>
+                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+
+                <div class="doa-card">
+                    <div class="doa-header">
+                        <div class="doa-badge"><i class="fa-solid fa-quran"></i> Surah Al-Baqarah: 201</div>
+                        <div class="doa-title">Doa Memohon Keselamatan Dunia & Akhirat</div>
+                    </div>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic">رَبَّنَآ ءَاتِنَا فِى ٱلدُّنْيَا حَسَنَةً وَفِى ٱلْءَاخِرَةِ حَسَنَةً وَقِنَا عَذَابَ ٱلنَّارِ ۝</div>
+                    </div>
+                    <div class="doa-footer">
+                        <div class="doa-translation">
+                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
+                            Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat dan peliharalah kami dari azab neraka.
+                        </div>
+                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+
+                <div class="doa-card">
+                    <div class="doa-header">
+                        <div class="doa-badge"><i class="fa-solid fa-heart"></i> Surah Ibrahim: 41 & Al-Isra: 24</div>
+                        <div class="doa-title">Doa Kepada Kedua Ibu Bapa</div>
+                    </div>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic">رَّبِّ ٱغْفِرْ لِى وَلِوَٰلِدَيَّ وَٱرْحَمْهُمَا كَمَا رَبَّيَانِى صَغِيرً۬ا ۝</div>
+                    </div>
+                    <div class="doa-footer">
+                        <div class="doa-translation">
+                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
+                            Wahai Tuhanku! Ampunilah dosaku dan dosa kedua ibu bapaku, dan kasihanilah mereka sebagaimana mereka mendidikku sewaktu kecil.
+                        </div>
+                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+
+                <div class="doa-card">
+                    <div class="doa-header">
+                        <div class="doa-badge"><i class="fa-solid fa-compass"></i> Surah Al-Kahf: 10</div>
+                        <div class="doa-title">Doa Memohon Rahmat & Petunjuk Umat</div>
+                    </div>
+                    <div class="doa-arabic-box">
+                        <div class="doa-arabic">رَبَّنَآ ءَاتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدً۬ا ۝</div>
+                    </div>
+                    <div class="doa-footer">
+                        <div class="doa-translation">
+                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
+                            Wahai Tuhan kami! Berikanlah rahmat daripada sisi-Mu kepada kami, dan sempurnakanlah bagi kami petunjuk yang lurus dalam urusan kami.
+                        </div>
+                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
+                            <i class="fa-regular fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <div class="nav-inner">
+            <button class="nav-item active" data-tab="tab-solat">
+                <i class="fa-solid fa-clock"></i>
+                <span>Waktu Solat</span>
+            </button>
+            <button class="nav-item" data-tab="tab-kiblat">
+                <i class="fa-solid fa-compass"></i>
+                <span>Kiblat</span>
+            </button>
+            <button class="nav-item" data-tab="tab-tasbih">
+                <i class="fa-solid fa-hands-praying"></i>
+                <span>Tasbih</span>
+            </button>
+            <button class="nav-item" data-tab="tab-doa">
+                <i class="fa-solid fa-book-quran"></i>
+                <span>Doa Harian</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- BANNER PROMPT NOTIFIKASI -->
+    <div class="pwa-banner" id="notif-banner" style="bottom:120px; border-color:var(--accent-emerald);">
+        <div class="pwa-text">
+            <i class="fa-solid fa-bell-ring" style="color:var(--accent-gold); margin-right:8px;"></i>
+            Aktifkan Push Notification Azan bila masuk waktu solat!
+        </div>
+        <button class="btn-gps" id="btn-enable-notif-banner" style="padding:6px 12px; font-size:0.75rem;">
+            Aktifkan
+        </button>
+    </div>
+
+    <!-- BANNER PROMPT INSTALL PWA -->
+    <div class="pwa-banner" id="pwa-banner">
+        <div class="pwa-text">
+            <i class="fa-solid fa-download" style="color:var(--accent-gold); margin-right:8px;"></i>
+            Pasang Aplikasi PWA Waktu Solat pada telefon anda!
+        </div>
+        <button class="btn-gps" id="btn-install-pwa" style="padding:6px 12px; font-size:0.75rem;">
+            Pasang Sekarang
+        </button>
+    </div>
+
+    <!-- MODAL TETAPAN NOTIFIKASI & UJI AZAN -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-body">
+            <div class="modal-header">
+                <div class="modal-title">Tetapan Notifikasi & Azan</div>
+                <button class="btn-icon" id="btn-close-settings"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
+                <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem;">Status Push Notification</div>
+                        <div id="notif-status-text" style="font-size:0.78rem; color:var(--text-secondary);">Semakan status...</div>
+                    </div>
+                    <button class="btn-gps" id="btn-toggle-notif-perm" style="padding:6px 12px; font-size:0.75rem;">
+                        Tetapan
+                    </button>
+                </div>
+
+                <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:10px;">
+                    <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem;">Uji Alunan Azan & Notifikasi</div>
+                    <div style="font-size:0.78rem; color:var(--text-secondary);">Tekan butang di bawah untuk menguji alunan audio Azan Makkah dan paparan notifikasi telefon.</div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-gps" id="btn-test-azan-audio" style="flex:1; justify-content:center;">
+                            <i class="fa-solid fa-play"></i> Mainkan Azan
+                        </button>
+                        <button class="btn-gps" id="btn-test-push-notif" style="flex:1; justify-content:center; background:linear-gradient(135deg, #38bdf8, #818cf8);">
+                            <i class="fa-solid fa-paper-plane"></i> Hantar Notif Ujian
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SELEKTOR ZON JAKIM -->
+    <div class="modal-overlay" id="modal-zone">
+        <div class="modal-body">
+            <div class="modal-header">
+                <div class="modal-title">Pilih Zon JAKIM Malaysia</div>
+                <button class="btn-icon" id="btn-close-zone"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="zone-select-group">
+                <input type="text" id="zone-search" class="search-input" placeholder="Cari negeri atau kawasan (cth: Shah Alam, KL, Ipoh)...">
+                <div class="zone-list" id="zone-list-container">
+                    <!-- Senarai Zon Dynamic dari jakim-zones.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TUKAR TEMA VISUAL -->
+    <div class="modal-overlay" id="modal-theme">
+        <div class="modal-body">
+            <div class="modal-header">
+                <div class="modal-title">Pilih Tema Visual PWA</div>
+                <button class="btn-icon" id="btn-close-theme"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="theme-options">
+                <div class="theme-card selected" data-theme-val="emerald">
+                    <div class="theme-preview" style="background:#06140e;">
+                        <div style="flex:1; background:#e5b95f; border-radius:4px;"></div>
+                        <div style="flex:1; background:#10b981; border-radius:4px;"></div>
+                    </div>
+                    <span>Zamrud Emas</span>
+                </div>
+
+                <div class="theme-card" data-theme-val="midnight">
+                    <div class="theme-preview" style="background:#090d16;">
+                        <div style="flex:1; background:#38bdf8; border-radius:4px;"></div>
+                        <div style="flex:1; background:#818cf8; border-radius:4px;"></div>
+                    </div>
+                    <span>Malam Aurora</span>
+                </div>
+
+                <div class="theme-card" data-theme-val="desert">
+                    <div class="theme-preview" style="background:#16120e;">
+                        <div style="flex:1; background:#e0a96d; border-radius:4px;"></div>
+                        <div style="flex:1; background:#f43f5e; border-radius:4px;"></div>
+                    </div>
+                    <span>Pasir Sahaja</span>
+                </div>
+
+                <div class="theme-card" data-theme-val="suci">
+                    <div class="theme-preview" style="background:#f4f6f8;">
+                        <div style="flex:1; background:#0d9488; border-radius:4px;"></div>
+                        <div style="flex:1; background:#059669; border-radius:4px;"></div>
+                    </div>
+                    <span>Mod Terang (Suci)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT UNTUK AZAN -->
+    <audio id="azan-audio" src="https://download.quranicaudio.com/adhan/makkah.mp3" preload="none"></audio>
+
+    <!-- SCRIPTS -->
+    <script src="jakim-zones.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

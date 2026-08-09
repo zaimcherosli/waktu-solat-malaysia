@@ -1,0 +1,999 @@
+/* ==========================================================================
+   PWA WAKTU SOLAT MALAYSIA - STYLESHEET (OPTIMIZED RESPONSIVE GRID)
+   Sistem Tema: Emerald Gold, Midnight Aurora, Desert Sand, Suci Light
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&family=Scheherazade+New:wght@400;700&display=swap');
+
+/* --- TEMA 1: EMERALD & ROYAL GOLD (DEFAULT) --- */
+:root, [data-theme="emerald"] {
+    --bg-main: #06140e;
+    --bg-card: rgba(13, 36, 26, 0.75);
+    --bg-card-hover: rgba(18, 48, 35, 0.88);
+    --bg-card-active: rgba(22, 61, 44, 0.95);
+    --bg-header: rgba(6, 20, 14, 0.9);
+    --bg-input: rgba(10, 28, 20, 0.95);
+    
+    --accent-gold: #e5b95f;
+    --accent-gold-glow: rgba(229, 185, 95, 0.35);
+    --accent-emerald: #10b981;
+    --accent-emerald-glow: rgba(16, 185, 129, 0.3);
+    
+    --text-primary: #f0fdf4;
+    --text-secondary: #a7f3d0;
+    --text-muted: #6ee7b7;
+    --text-gold: #fef08a;
+    
+    --border-color: rgba(229, 185, 95, 0.22);
+    --border-active: rgba(229, 185, 95, 0.65);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    
+    --glass-blur: blur(16px);
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-arabic: 'Amiri', serif;
+    --font-uthmani: 'Amiri Quran', 'Scheherazade New', serif;
+}
+
+/* --- TEMA 2: MIDNIGHT AURORA --- */
+[data-theme="midnight"] {
+    --bg-main: #090d16;
+    --bg-card: rgba(16, 24, 40, 0.75);
+    --bg-card-hover: rgba(24, 36, 60, 0.88);
+    --bg-card-active: rgba(30, 48, 80, 0.95);
+    --bg-header: rgba(9, 13, 22, 0.9);
+    --bg-input: rgba(13, 19, 32, 0.95);
+    
+    --accent-gold: #38bdf8;
+    --accent-gold-glow: rgba(56, 189, 248, 0.35);
+    --accent-emerald: #818cf8;
+    --accent-emerald-glow: rgba(129, 140, 248, 0.3);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #bae6fd;
+    --text-muted: #7dd3fc;
+    --text-gold: #e0f2fe;
+    
+    --border-color: rgba(56, 189, 248, 0.22);
+    --border-active: rgba(56, 189, 248, 0.65);
+    --shadow-color: rgba(0, 0, 0, 0.6);
+}
+
+/* --- TEMA 3: DESERT SAND & ROSE --- */
+[data-theme="desert"] {
+    --bg-main: #16120e;
+    --bg-card: rgba(36, 28, 22, 0.75);
+    --bg-card-hover: rgba(48, 37, 28, 0.88);
+    --bg-card-active: rgba(64, 48, 36, 0.95);
+    --bg-header: rgba(22, 18, 14, 0.9);
+    --bg-input: rgba(26, 21, 16, 0.95);
+    
+    --accent-gold: #e0a96d;
+    --accent-gold-glow: rgba(224, 169, 109, 0.35);
+    --accent-emerald: #f43f5e;
+    --accent-emerald-glow: rgba(244, 63, 94, 0.3);
+    
+    --text-primary: #fff7ed;
+    --text-secondary: #fed7aa;
+    --text-muted: #fdba74;
+    --text-gold: #fef3c7;
+    
+    --border-color: rgba(224, 169, 109, 0.25);
+    --border-active: rgba(224, 169, 109, 0.65);
+    --shadow-color: rgba(0, 0, 0, 0.55);
+}
+
+/* --- TEMA 4: SUCI CLEAN LIGHT --- */
+[data-theme="suci"] {
+    --bg-main: #f4f6f8;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(255, 255, 255, 0.98);
+    --bg-card-active: #ffffff;
+    --bg-header: rgba(244, 246, 248, 0.95);
+    --bg-input: #ffffff;
+    
+    --accent-gold: #0d9488;
+    --accent-gold-glow: rgba(13, 148, 136, 0.25);
+    --accent-emerald: #059669;
+    --accent-emerald-glow: rgba(5, 150, 105, 0.2);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-gold: #0f766e;
+    
+    --border-color: rgba(13, 148, 136, 0.2);
+    --border-active: rgba(13, 148, 136, 0.6);
+    --shadow-color: rgba(15, 23, 42, 0.08);
+}
+
+/* --- ASAS RESET & SETUP --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(229, 185, 95, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 40%);
+}
+
+.arabic-font {
+    font-family: var(--font-arabic);
+}
+
+/* --- CONTAINER UTAMA --- */
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 12px 12px 90px 12px;
+    flex: 1;
+}
+
+/* --- HEADER & TOP BAR --- */
+header.top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-header);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+}
+
+.header-inner {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-emerald));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px var(--accent-gold-glow);
+}
+
+.brand-text h1 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+}
+
+.brand-text span {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: block;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-icon:hover, .btn-icon:active {
+    background: var(--bg-card-hover);
+    border-color: var(--border-active);
+    transform: translateY(-1px);
+}
+
+/* --- KAD PEMILIH ZON & LOKASI --- */
+.location-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+.zone-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0; /* Crucial for text truncation */
+}
+
+.zone-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.zone-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.zone-details {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.location-btn-group {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.btn-gps {
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-emerald));
+    color: #05140d;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px var(--accent-gold-glow);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-gps:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* --- KAD BANNER SOLAT SETERUSNYA (HERO) --- */
+.hero-card {
+    background: linear-gradient(145deg, var(--bg-card-hover), var(--bg-card));
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-active);
+    border-radius: 20px;
+    padding: 16px 14px;
+    margin-bottom: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 28px var(--shadow-color);
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, var(--accent-gold-glow) 0%, transparent 60%);
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.date-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.next-prayer-badge {
+    display: inline-block;
+    background: rgba(229, 185, 95, 0.15);
+    color: var(--accent-gold);
+    border: 1px solid var(--border-color);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.next-prayer-name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+/* Ring Pemasa Countdown */
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0 12px 0;
+}
+
+.countdown-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 46px;
+}
+
+.timer-value {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 4px 6px;
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.timer-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 3px;
+    font-weight: 600;
+}
+
+.timer-sep {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-top: -12px;
+}
+
+.next-time-exact {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+.next-time-exact span {
+    color: var(--accent-emerald);
+    font-weight: 700;
+}
+
+/* --- GRID 6 WAKTU SOLAT --- */
+.prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 480px) {
+    .prayer-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.prayer-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+    position: relative;
+    transition: all 0.25s ease;
+    min-height: 72px;
+}
+
+.prayer-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-active);
+    transform: translateY(-2px);
+}
+
+.prayer-card.active {
+    background: var(--bg-card-active);
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 6px 18px var(--accent-gold-glow);
+}
+
+.prayer-card.active::after {
+    content: 'SEKARANG';
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    background: var(--accent-gold);
+    color: #000;
+    font-size: 0.55rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.prayer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.prayer-head-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.prayer-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(229, 185, 95, 0.12);
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+}
+
+.prayer-card.active .prayer-icon {
+    background: var(--accent-gold);
+    color: #000;
+}
+
+.prayer-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.prayer-arabic {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    opacity: 0.85;
+    font-family: var(--font-arabic);
+}
+
+.prayer-time {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    letter-spacing: -0.3px;
+    margin-top: 2px;
+}
+
+.prayer-card.active .prayer-time {
+    color: var(--text-primary);
+}
+
+/* --- TAB SECTIONS (KIBLAT, TASBIH, DOA) --- */
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* KOMPAS KIBLAT */
+.compass-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 20px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.compass-dial {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 4px solid var(--border-active);
+    background: radial-gradient(circle, var(--bg-card-hover) 0%, var(--bg-main) 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    transition: transform 0.2s ease-out;
+}
+
+.compass-needle {
+    width: 6px;
+    height: 160px;
+    position: absolute;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s cubic-bezier(0.1, 0.7, 0.1, 1);
+}
+
+.needle-north {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 70px solid #ef4444;
+}
+
+.needle-south {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 70px solid var(--text-muted);
+}
+
+.kaaba-icon {
+    position: absolute;
+    top: 22px;
+    font-size: 1.3rem;
+    color: var(--accent-gold);
+}
+
+.compass-degree {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+}
+
+/* TASBIH DIGITAL */
+.tasbih-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.tasbih-count-display {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    background: var(--bg-main);
+    border: 2px solid var(--border-color);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.btn-tasbih-tap {
+    width: 100%;
+    max-width: 260px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-emerald));
+    color: #05140d;
+    border: none;
+    border-radius: 26px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px var(--accent-gold-glow);
+    transition: transform 0.1s ease;
+}
+
+.btn-tasbih-tap:active {
+    transform: scale(0.95);
+}
+
+.tasbih-controls {
+    display: flex;
+    gap: 12px;
+}
+
+/* DOA HARIAN LIST */
+.doa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.doa-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 6px 20px var(--shadow-color);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.doa-card:hover {
+    border-color: var(--border-active);
+    transform: translateY(-2px);
+}
+
+.doa-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doa-badge {
+    align-self: flex-start;
+    background: rgba(229, 185, 95, 0.12);
+    color: var(--accent-gold);
+    border: 1px solid var(--border-color);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.doa-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.doa-arabic-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-right: 3px solid var(--accent-gold);
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.doa-arabic {
+    font-family: var(--font-uthmani);
+    font-size: 1.25rem;
+    text-align: right;
+    line-height: 2.25rem;
+    color: var(--text-primary);
+    direction: rtl;
+    word-spacing: 1px;
+}
+
+.doa-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 10px;
+}
+
+.doa-translation {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.35rem;
+    flex: 1;
+}
+
+.doa-quote-icon {
+    color: var(--accent-gold);
+    margin-right: 4px;
+    font-size: 0.75rem;
+}
+
+.btn-copy-doa {
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-copy-doa:hover {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+}
+
+/* --- BOTTOM NAVIGATION BAR --- */
+nav.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg-header);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-top: 1px solid var(--border-color);
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+
+.nav-inner {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-item i {
+    font-size: 1.05rem;
+}
+
+.nav-item.active {
+    color: var(--accent-gold);
+    background: rgba(229, 185, 95, 0.12);
+}
+
+/* --- MODAL DIALOGUES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.25s ease;
+}
+
+.modal-body {
+    background: var(--bg-main);
+    border: 1px solid var(--border-active);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+/* SELEKTOR ZON & NEGERI IN MODAL */
+.zone-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: var(--accent-gold);
+}
+
+.zone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.zone-item {
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+}
+
+.zone-item:hover, .zone-item.selected {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-gold);
+}
+
+.zone-item-code {
+    font-weight: 700;
+    color: var(--accent-gold);
+    font-size: 0.82rem;
+}
+
+.zone-item-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+/* PEMILIH TEMA */
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.theme-card {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.theme-card.selected {
+    border-color: var(--accent-gold);
+    box-shadow: 0 4px 16px var(--accent-gold-glow);
+}
+
+.theme-preview {
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+}
+
+.theme-card span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* BANNER PROMPT PWA INSTALL */
+.pwa-banner {
+    position: fixed;
+    bottom: 64px;
+    left: 12px;
+    right: 12px;
+    max-width: 476px;
+    margin: 0 auto;
+    background: var(--bg-card-active);
+    border: 1px solid var(--accent-gold);
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 990;
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.pwa-banner.active {
+    display: flex;
+}
+
+.pwa-text {
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
