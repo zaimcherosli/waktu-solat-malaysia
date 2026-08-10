@@ -982,7 +982,7 @@ nav.bottom-nav {
 }
 
 .modal-overlay.active {
-    display: flex;
+    display: flex !important;
     animation: fadeIn 0.25s ease;
 }
 

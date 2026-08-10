@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.4.1">
+    <link rel="stylesheet" href="style.css?v=1.4.5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-icon" id="btn-open-install-guide" title="Panduan Pasang Aplikasi (Install App)">
+                <button class="btn-icon" id="btn-open-install-guide" onclick="openPwaInstallGuide()" title="Panduan Pasang Aplikasi (Install App)">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                 </button>
                 <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
@@ -331,7 +331,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.4.1</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.4.5</span>
         </footer>
     </main>
 
@@ -553,7 +553,7 @@
                     <div class="modal-title">Panduan Pasang Aplikasi (PWA)</div>
                     <span class="modal-subtitle">Tambah ke Skrin Utama telefon untuk akses pantas & notifikasi azan</span>
                 </div>
-                <button class="btn-icon" id="btn-close-install-guide"><i class="fa-solid fa-xmark"></i></button>
+                <button class="btn-icon" id="btn-close-install-guide" onclick="closePwaInstallGuide()"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
             <div class="install-guide-content">
@@ -603,7 +603,7 @@
             </div>
 
             <div class="install-guide-footer">
-                <button class="btn-primary-action" id="btn-dismiss-install-guide">
+                <button class="btn-primary-action" id="btn-dismiss-install-guide" onclick="closePwaInstallGuide()">
                     <i class="fa-solid fa-circle-check"></i> Faham & Teruskan
                 </button>
             </div>
@@ -615,6 +615,36 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.4.1"></script>
+    <script src="app.js?v=1.4.5"></script>
+
+    <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
+    <script>
+        function openPwaInstallGuide() {
+            var modal = document.getElementById('modal-install-guide');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closePwaInstallGuide() {
+            var modal = document.getElementById('modal-install-guide');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            try {
+                localStorage.setItem('hasSeenPwaInstallGuide_v3', 'true');
+            } catch(e) {}
+        }
+
+        // Auto popup on load if not seen yet
+        window.addEventListener('load', function() {
+            var hasSeen = localStorage.getItem('hasSeenPwaInstallGuide_v3');
+            if (!hasSeen) {
+                setTimeout(function() {
+                    openPwaInstallGuide();
+                }, 700);
+            }
+        });
+    </script>
 </body>
 </html>
