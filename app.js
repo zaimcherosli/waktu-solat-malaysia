@@ -63,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCloseThemeModal: document.getElementById('btn-close-theme'),
         modalTheme: document.getElementById('modal-theme'),
         themeCards: document.querySelectorAll('.theme-card'),
+        btnOpenInstallGuide: document.getElementById('btn-open-install-guide'),
+        btnCloseInstallGuide: document.getElementById('btn-close-install-guide'),
+        btnDismissInstallGuide: document.getElementById('btn-dismiss-install-guide'),
+        modalInstallGuide: document.getElementById('modal-install-guide'),
         btnToggleAudio: document.getElementById('btn-toggle-audio'),
         audioIcon: document.getElementById('audio-icon'),
         azanAudio: document.getElementById('azan-audio'),
@@ -112,12 +116,22 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(state.theme);
         updateAudioButton();
         checkNotificationStatus();
+        checkFirstTimeInstallGuide();
         renderZoneList();
         loadPrayerData(state.currentZone);
         setupEventListeners();
         startLiveClock();
         updateTasbihUI();
         registerServiceWorker();
+    }
+
+    function checkFirstTimeInstallGuide() {
+        const hasSeen = localStorage.getItem('hasSeenPwaInstallGuide_v1');
+        if (!hasSeen) {
+            setTimeout(() => {
+                openModal(dom.modalInstallGuide);
+            }, 600);
+        }
     }
 
     // --- 1. TEMA VISUAL ---
@@ -843,11 +857,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Modal Panduan Install PWA
+        if (dom.btnOpenInstallGuide) dom.btnOpenInstallGuide.addEventListener('click', () => openModal(dom.modalInstallGuide));
+        if (dom.btnCloseInstallGuide) {
+            dom.btnCloseInstallGuide.addEventListener('click', () => {
+                closeModal(dom.modalInstallGuide);
+                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+            });
+        }
+        if (dom.btnDismissInstallGuide) {
+            dom.btnDismissInstallGuide.addEventListener('click', () => {
+                closeModal(dom.modalInstallGuide);
+                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+            });
+        }
+
         // Close Modals on Overlay Click
         window.addEventListener('click', (e) => {
             if (e.target === dom.modalZone) closeModal(dom.modalZone);
             if (e.target === dom.modalTheme) closeModal(dom.modalTheme);
             if (e.target === dom.modalSettings) closeModal(dom.modalSettings);
+            if (e.target === dom.modalInstallGuide) {
+                closeModal(dom.modalInstallGuide);
+                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+            }
         });
 
         // PWA Install Prompt

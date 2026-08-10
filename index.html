@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.3.7">
+    <link rel="stylesheet" href="style.css?v=1.4.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -36,6 +36,9 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="btn-icon" id="btn-open-install-guide" title="Panduan Pasang Aplikasi (Install App)">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </button>
                 <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
                     <i class="fa-solid fa-bell" id="notif-icon"></i>
                     <span class="notif-badge-dot"></span>
@@ -328,7 +331,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.3.7</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.4.0</span>
         </footer>
     </main>
 
@@ -542,6 +545,69 @@
                 </div>
             </div>
         </div>
+    <!-- MODAL PANDUAN CARA INSTALL PWA (ANDROID & APPLE) -->
+    <div class="modal-overlay" id="modal-install-guide">
+        <div class="modal-body install-guide-modal-body">
+            <div class="modal-header">
+                <div class="modal-title-box">
+                    <div class="modal-title">Panduan Pasang Aplikasi (PWA)</div>
+                    <span class="modal-subtitle">Tambah ke Skrin Utama telefon untuk akses pantas & notifikasi azan</span>
+                </div>
+                <button class="btn-icon" id="btn-close-install-guide"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="install-guide-content">
+                <!-- BAHAGIAN 1: ANDROID (KAT ATAS) -->
+                <div class="install-section android-section">
+                    <div class="install-section-header">
+                        <i class="fa-brands fa-android android-icon"></i>
+                        <span>Pengguna Android (Google Chrome)</span>
+                    </div>
+                    <ol class="install-steps">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Tekan menu <b>Tiga Titik (⋮)</b> di sudut atas kanan browser Chrome.</span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Pilih & tekan <b>"Add to Home screen"</b> atau <b>"Pasang Aplikasi"</b>.</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Tekan <b>"Install"</b> atau <b>"Tambah"</b>. Aplikasi sedia digunakan!</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- BAHAGIAN 2: APPLE / IPHONE (BAWAH DIA) -->
+                <div class="install-section apple-section">
+                    <div class="install-section-header">
+                        <i class="fa-brands fa-apple apple-icon"></i>
+                        <span>Pengguna Apple iPhone (Safari)</span>
+                    </div>
+                    <ol class="install-steps">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Tekan butang <b>Kongsi (Share <i class="fa-solid fa-arrow-up-from-bracket share-icon"></i>)</b> di bahagian bawah browser Safari.</span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Skrol ke bawah & pilih <b>"Add to Home Screen"</b> (<i class="fa-regular fa-square-plus add-icon"></i> <b>Tambah ke Skrin Utama</b>).</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Tekan <b>"Add"</b> di sudut atas kanan skrin. Ikon aplikasi akan muncul di skrin utama!</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="install-guide-footer">
+                <button class="btn-primary-action" id="btn-dismiss-install-guide">
+                    <i class="fa-solid fa-circle-check"></i> Faham & Teruskan
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- AUDIO ELEMENT UNTUK AZAN -->
@@ -549,6 +615,6 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.3.7"></script>
+    <script src="app.js?v=1.4.0"></script>
 </body>
 </html>
