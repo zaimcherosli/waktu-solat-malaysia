@@ -372,34 +372,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function stopAzanAudio() {
-        if (dom.azanAudio) {
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (audioEl) {
             try {
-                dom.azanAudio.pause();
-                dom.azanAudio.currentTime = 0;
+                audioEl.pause();
+                audioEl.currentTime = 0;
             } catch (e) {}
         }
-        if (dom.btnTestAzanAudio) {
+        const btnHeader = document.getElementById('btn-test-azan-header');
+        if (btnHeader) {
+            btnHeader.style.color = '#ffffff';
+        }
+        if (dom && dom.btnTestAzanAudio) {
             dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
             dom.btnTestAzanAudio.classList.remove('btn-stop-active');
         }
     }
+    window.stopAzanAudio = stopAzanAudio;
 
     function unlockAudioOnUserGesture() {
-        if (state.audioUnlocked) return;
-        if (dom.azanAudio) {
-            dom.azanAudio.play().then(() => {
-                dom.azanAudio.pause();
-                dom.azanAudio.currentTime = 0;
-                state.audioUnlocked = true;
-                console.log('Audio Azan dibuka kunci melalui sentuhan pengguna.');
-            }).catch(() => {});
-        }
-        if (window.AudioContext || window.webkitAudioContext) {
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (audioEl) {
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                if (ctx.state === 'suspended') {
-                    ctx.resume();
-                }
+                audioEl.load();
+                audioEl.play().then(() => {
+                    audioEl.pause();
+                    audioEl.currentTime = 0;
+                    console.log('Audio Azan sedia dimainkan.');
+                }).catch(() => {});
             } catch(e){}
         }
     }
@@ -407,113 +407,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchstart', unlockAudioOnUserGesture, { once: true });
 
     function toggleAzanPlayback() {
-        if (dom.azanAudio && !dom.azanAudio.paused) {
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (audioEl && !audioEl.paused) {
             stopAzanAudio();
         } else {
-            playAzanAudio();
-        }
-    }
-
-    function playAzanAudio() {
-        if (!dom.azanAudio) {
-            playSynthesizedAzanChime();
-            return;
-        }
-        try {
-            dom.azanAudio.currentTime = 0;
-            const playPromise = dom.azanAudio.play();
-            
-            if (dom.btnTestAzanAudio) {
-                dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-square"></i> Hentikan Azan';
-                dom.btnTestAzanAudio.classList.add('btn-stop-active');
-            }
-
-            if (dom.azanAudio) {
-                dom.azanAudio.onended = stopAzanAudio;
-            }
-
-            if (playPromise !== undefined) {
-                playPromise.catch(err => {
-                    console.log('Audio playback info:', err);
-                    playSynthesizedAzanChime();
-                });
-            }
-        } catch (e) {
-            playSynthesizedAzanChime();
-        }
-    }
-
-    function checkNotificationStatus() {
-        if (!('Notification' in window)) {
-            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Notifikasi tidak disokong pada pelayar ini.';
-            return;
-        }
-
-        if (Notification.permission === 'granted') {
-            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Aktif (Dibenarkan)';
-            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--accent-gold)';
-            if (dom.notifBanner) dom.notifBanner.classList.remove('active');
-        } else if (Notification.permission === 'denied') {
-            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Dihalang di tetapan browser';
-            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--text-muted)';
-            if (dom.notifBanner) dom.notifBanner.classList.remove('active');
-        } else {
-            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Belum Diaktifkan';
-            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--text-muted)';
-            if (dom.notifBanner) dom.notifBanner.classList.add('active');
-        }
-    }
-
-    function requestNotificationPermission() {
-        if (!('Notification' in window)) {
-            alert('Notifikasi tidak disokong pada peranti ini.');
-            return;
-        }
-
-        Notification.requestPermission().then(permission => {
-            checkNotificationStatus();
-            if (permission === 'granted') {
-                sendPushNotification('Notifikasi Solat Diaktifkan', 'Anda akan menerima pemberitahuan & alunan azan apabila masuk waktu solat.');
-            }
-        });
-    }
-
-    function sendPushNotification(title, body) {
-        if (!('Notification' in window) || Notification.permission !== 'granted') {
-            return;
-        }
-        const options = {
-            body: body,
-            icon: 'icons/icon-192.png',
-            badge: 'icons/icon-192.png',
-            vibrate: [500, 200, 500, 200, 1000],
-            tag: 'waktu-solat-azan',
-            renotify: true,
-            requireInteraction: true
-        };
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, options);
-            }).catch(() => {
-                try {
-                    new Notification(title, options);
-                } catch(e){}
-            });
-        } else {
-            try {
-                new Notification(title, options);
-            } catch(e){}
+            playAzanAudio('Ujian');
         }
     }
 
     function playAzanAudio(prayerName = 'Solat') {
-        if (!dom.azanAudio) {
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (!audioEl) {
             playSynthesizedAzanChime();
             return;
         }
         try {
-            // Android MediaSession API untuk sokongan audio waktu skrin tertutup (Lock Screen)
             if ('mediaSession' in navigator) {
                 try {
                     navigator.mediaSession.metadata = new MediaMetadata({
@@ -524,21 +432,30 @@ document.addEventListener('DOMContentLoaded', () => {
                             { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }
                         ]
                     });
-                    navigator.mediaSession.setActionHandler('play', () => { if (dom.azanAudio) dom.azanAudio.play(); });
+                    navigator.mediaSession.setActionHandler('play', () => { if (audioEl) audioEl.play(); });
                     navigator.mediaSession.setActionHandler('pause', () => { stopAzanAudio(); });
                     navigator.mediaSession.setActionHandler('stop', () => { stopAzanAudio(); });
                 } catch(e) {}
             }
 
-            dom.azanAudio.currentTime = 0;
-            const playPromise = dom.azanAudio.play();
+            audioEl.currentTime = 0;
+            const playPromise = audioEl.play();
             
-            if (dom.btnTestAzanAudio) {
+            const btnHeader = document.getElementById('btn-test-azan-header');
+            if (btnHeader) {
+                btnHeader.style.color = 'var(--accent-gold)';
+            }
+
+            if (dom && dom.btnTestAzanAudio) {
                 dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-volume-high fa-spin"></i> Dimainkan...';
                 setTimeout(() => {
-                    if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
+                    if (dom && dom.btnTestAzanAudio) dom.btnTestAzanAudio.innerHTML = '<i class="fa-solid fa-play"></i> Mainkan Azan';
                 }, 6000);
             }
+
+            audioEl.onended = () => {
+                stopAzanAudio();
+            };
 
             if (playPromise !== undefined) {
                 playPromise.catch(err => {
@@ -550,6 +467,17 @@ document.addEventListener('DOMContentLoaded', () => {
             playSynthesizedAzanChime();
         }
     }
+    window.playAzanAudio = playAzanAudio;
+
+    function testAzanHeader() {
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (audioEl && !audioEl.paused) {
+            stopAzanAudio();
+        } else {
+            playAzanAudio('Makkah');
+        }
+    }
+    window.testAzanHeader = testAzanHeader;
 
     function playSynthesizedAzanChime() {
         try {
