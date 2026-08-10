@@ -2,7 +2,7 @@
    PWA SERVICE WORKER - CACHING & OFFLINE ENGINE
    ========================================================================== */
 
-const CACHE_NAME = 'waktu-solat-v1.7.0';
+const CACHE_NAME = 'waktu-solat-v2.0.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,8 @@ const STATIC_ASSETS = [
   './jakim-zones.js',
   './manifest.json',
   './audio/azan.mp3',
+  './data/al-mulk.json',
+  './data/al-waqiah.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&family=Scheherazade+New:wght@400;700&display=swap'
 ];

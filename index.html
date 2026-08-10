@@ -244,94 +244,28 @@
                     <button class="btn-tasbih-action btn-switch" id="btn-tasbih-switch" onclick="switchTasbihPhrase()" title="Tukar Kalimah Zikir">
                         <i class="fa-solid fa-arrows-rotate"></i> Tukar Zikir
                     </button>
+                <!-- TAB 4: AL-QURAN DIGITAL (SURAH AL-MULK & AL-WAQIAH) -->
+        <section id="tab-quran" class="tab-content">
+            <div class="quran-controls-bar">
+                <select id="quran-surah-select" class="quran-select-input" onchange="loadQuranSurah(this.value)">
+                    <option value="67">Surah Al-Mulk (سُورَةُ المُلۡكِ)</option>
+                    <option value="56">Surah Al-Waqiah (سُورَةُ ٱلْوَاقِعَةِ)</option>
+                </select>
+                <div class="quran-font-controls">
+                    <button class="btn-font-scale" onclick="adjustQuranFontSize(-2)" title="Kecilkan Saiz Teks">A-</button>
+                    <span id="quran-font-size-indicator">100%</span>
+                    <button class="btn-font-scale" onclick="adjustQuranFontSize(2)" title="Besarkan Saiz Teks">A+</button>
                 </div>
             </div>
-        </section>
 
-        <!-- TAB 4: DOA HARIAN -->
-        <section id="tab-doa" class="tab-content">
-            <div class="doa-list">
-                <div class="doa-card">
-                    <div class="doa-header">
-                        <div class="doa-badge"><i class="fa-solid fa-book-open"></i> Surah Al-Fatihah: 2 & Doa Ma'thur</div>
-                        <div class="doa-title">Pujian & Doa Selepas Solat Fardhu</div>
-                    </div>
-                    <div class="doa-arabic-box">
-                        <div class="doa-arabic">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝ حَمْدً۬ا يُوَافِى نِعَمَهُۥ وَيُكَافِئُ مَزِيدَهُۥ</div>
-                    </div>
-                    <div class="doa-footer">
-                        <div class="doa-translation">
-                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
-                            Segala puji bagi Allah Tuhan pentadbir seluruh alam, pujian yang melengkapi nikmat-Nya.
-                        </div>
-                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
-                            <i class="fa-regular fa-copy"></i> Salin
-                        </button>
-                    </div>
-                </div>
-
-                <div class="doa-card">
-                    <div class="doa-header">
-                        <div class="doa-badge"><i class="fa-solid fa-quran"></i> Surah Al-Baqarah: 201</div>
-                        <div class="doa-title">Doa Memohon Keselamatan Dunia & Akhirat</div>
-                    </div>
-                    <div class="doa-arabic-box">
-                        <div class="doa-arabic">رَبَّنَآ ءَاتِنَا فِى ٱلدُّنْيَا حَسَنَةً وَفِى ٱلْءَاخِرَةِ حَسَنَةً وَقِنَا عَذَابَ ٱلنَّارِ ۝</div>
-                    </div>
-                    <div class="doa-footer">
-                        <div class="doa-translation">
-                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
-                            Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat dan peliharalah kami dari azab neraka.
-                        </div>
-                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
-                            <i class="fa-regular fa-copy"></i> Salin
-                        </button>
-                    </div>
-                </div>
-
-                <div class="doa-card">
-                    <div class="doa-header">
-                        <div class="doa-badge"><i class="fa-solid fa-heart"></i> Surah Ibrahim: 41 & Al-Isra: 24</div>
-                        <div class="doa-title">Doa Kepada Kedua Ibu Bapa</div>
-                    </div>
-                    <div class="doa-arabic-box">
-                        <div class="doa-arabic">رَّبِّ ٱغْفِرْ لِى وَلِوَٰلِدَيَّ وَٱرْحَمْهُمَا كَمَا رَبَّيَانِى صَغِيرً۬ا ۝</div>
-                    </div>
-                    <div class="doa-footer">
-                        <div class="doa-translation">
-                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
-                            Wahai Tuhanku! Ampunilah dosaku dan dosa kedua ibu bapaku, dan kasihanilah mereka sebagaimana mereka mendidikku sewaktu kecil.
-                        </div>
-                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
-                            <i class="fa-regular fa-copy"></i> Salin
-                        </button>
-                    </div>
-                </div>
-
-                <div class="doa-card">
-                    <div class="doa-header">
-                        <div class="doa-badge"><i class="fa-solid fa-compass"></i> Surah Al-Kahf: 10</div>
-                        <div class="doa-title">Doa Memohon Rahmat & Petunjuk Umat</div>
-                    </div>
-                    <div class="doa-arabic-box">
-                        <div class="doa-arabic">رَبَّنَآ ءَاتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدً۬ا ۝</div>
-                    </div>
-                    <div class="doa-footer">
-                        <div class="doa-translation">
-                            <i class="fa-solid fa-quote-left doa-quote-icon"></i>
-                            Wahai Tuhan kami! Berikanlah rahmat daripada sisi-Mu kepada kami, dan sempurnakanlah bagi kami petunjuk yang lurus dalam urusan kami.
-                        </div>
-                        <button class="btn-copy-doa" onclick="copyDoaText(this)">
-                            <i class="fa-regular fa-copy"></i> Salin
-                        </button>
-                    </div>
-                </div>
+            <div id="quran-reader-container" class="quran-reader-box">
+                <!-- Kandungan Surah dimuatkan secara dinamik -->
             </div>
         </section>
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.7.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.0.0</span>
         </footer>
     </main>
 
@@ -350,9 +284,9 @@
                 <i class="fa-solid fa-hands-praying"></i>
                 <span>Tasbih</span>
             </button>
-            <button class="nav-item" data-tab="tab-doa">
+            <button class="nav-item" data-tab="tab-quran">
                 <i class="fa-solid fa-book-quran"></i>
-                <span>Doa Harian</span>
+                <span>Al-Quran</span>
             </button>
         </div>
     </nav>

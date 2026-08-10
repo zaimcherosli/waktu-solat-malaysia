@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
         startLiveClock();
         updateTasbihUI();
+        loadQuranSurah(localStorage.getItem('last_selected_surah') || '67');
         registerServiceWorker();
     }
 
@@ -968,14 +969,123 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 12. REGISTER SERVICE WORKER (PWA) ---
-    function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('ServiceWorker registered:', reg.scope))
-                .catch(err => console.log('ServiceWorker registration failed:', err));
+    // --- 13. AL-QURAN DIGITAL READER (SURAH AL-MULK & AL-WAQIAH) ---
+    async function loadQuranSurah(surahNum = '67') {
+        const container = document.getElementById('quran-reader-container');
+        if (!container) return;
+
+        const num = String(surahNum);
+        localStorage.setItem('last_selected_surah', num);
+
+        const selectEl = document.getElementById('quran-surah-select');
+        if (selectEl) selectEl.value = num;
+
+        container.innerHTML = `
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 40px 0; color:var(--accent-emerald); gap:12px;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;"></i>
+                <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">Memuatkan Surah...</span>
+            </div>
+        `;
+
+        try {
+            let fileName = 'al-mulk.json';
+            if (num === '56') fileName = 'al-waqiah.json';
+
+            const response = await fetch(`./data/${fileName}`);
+            if (!response.ok) throw new Error("Gagal mengambil data surah tempatan");
+            const data = await response.json();
+
+            if (!state.quranFontSizeScale) {
+                state.quranFontSizeScale = parseInt(localStorage.getItem('quran_font_size_scale')) || 22;
+            }
+            const scalePct = Math.round((state.quranFontSizeScale / 22) * 100);
+            const indicatorEl = document.getElementById('quran-font-size-indicator');
+            if (indicatorEl) indicatorEl.textContent = `${scalePct}%`;
+
+            container.innerHTML = `
+                <div class="quran-surah-header-card">
+                    <div class="quran-header-arabic">${data.name}</div>
+                    <div class="quran-header-title">${data.englishName}</div>
+                    <div class="quran-header-sub">
+                        ${data.englishNameTranslation} • ${data.numberOfAyahs} Ayat • ${data.revelationType === 'Meccan' ? 'Makkiyah' : 'Madaniyah'}
+                    </div>
+                </div>
+
+                <div class="quran-bismillah">
+                    بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                </div>
+
+                <div class="quran-verses-list">
+                    ${data.verses.map(v => `
+                        <div class="quran-verse-card">
+                            <div class="quran-verse-top">
+                                <span class="quran-verse-number">${v.number}</span>
+                                <button class="btn-copy-verse" onclick="copyVerseText(this, '${data.englishName}', ${v.number})">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                            </div>
+                            <div class="quran-verse-arabic" style="font-size:${state.quranFontSizeScale}px;">
+                                ${v.text}
+                            </div>
+                            <div class="quran-verse-translation">
+                                ${v.translation}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        } catch (e) {
+            console.error('Quran loading error:', e);
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; color:var(--text-secondary);">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem; color:var(--accent-gold); margin-bottom:10px;"></i>
+                    <p style="font-size:0.9rem;">Gagal memuatkan Surah. Sila pastikan sambungan internet aktif.</p>
+                    <button class="btn-tasbih-action btn-reset" onclick="loadQuranSurah('${num}')" style="margin:14px auto 0 auto;">
+                        <i class="fa-solid fa-rotate-right"></i> Cuba Lagi
+                    </button>
+                </div>
+            `;
         }
     }
+    window.loadQuranSurah = loadQuranSurah;
+
+    function adjustQuranFontSize(diff) {
+        if (!state.quranFontSizeScale) state.quranFontSizeScale = 22;
+        state.quranFontSizeScale = Math.max(16, Math.min(36, state.quranFontSizeScale + diff));
+        localStorage.setItem('quran_font_size_scale', state.quranFontSizeScale);
+
+        const scalePct = Math.round((state.quranFontSizeScale / 22) * 100);
+        const indicatorEl = document.getElementById('quran-font-size-indicator');
+        if (indicatorEl) indicatorEl.textContent = `${scalePct}%`;
+
+        document.querySelectorAll('.quran-verse-arabic').forEach(el => {
+            el.style.fontSize = `${state.quranFontSizeScale}px`;
+        });
+    }
+    window.adjustQuranFontSize = adjustQuranFontSize;
+
+    function copyVerseText(btn, surahName, verseNum) {
+        const card = btn.closest('.quran-verse-card');
+        if (!card) return;
+        const arabic = card.querySelector('.quran-verse-arabic').textContent.trim();
+        const translation = card.querySelector('.quran-verse-translation').textContent.trim();
+        const fullText = `${arabic}\n\n"${translation}"\n- Surah ${surahName} (${verseNum})`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullText).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Disalin!';
+                btn.style.color = 'var(--accent-emerald)';
+                btn.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 1800);
+            });
+        }
+    }
+    window.copyVerseText = copyVerseText;
 
     // MULA APLIKASI
     init();
