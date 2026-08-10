@@ -500,6 +500,49 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e){}
     }
 
+    function checkNotificationStatus() {
+        if (!('Notification' in window)) {
+            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Notifikasi tidak disokong pada pelayar ini.';
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Aktif (Dibenarkan)';
+            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--accent-gold)';
+            if (dom.notifBanner) dom.notifBanner.classList.remove('active');
+        } else if (Notification.permission === 'denied') {
+            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Dihalang di tetapan browser';
+            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--text-muted)';
+            if (dom.notifBanner) dom.notifBanner.classList.remove('active');
+        } else {
+            if (dom.notifStatusText) dom.notifStatusText.textContent = 'Belum Diaktifkan';
+            if (dom.notifIcon) dom.notifIcon.style.color = 'var(--text-muted)';
+            if (dom.notifBanner) dom.notifBanner.classList.add('active');
+        }
+    }
+
+    function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            alert('Notifikasi tidak disokong pada peranti ini.');
+            return;
+        }
+
+        Notification.requestPermission().then(permission => {
+            checkNotificationStatus();
+            if (permission === 'granted') {
+                sendPushNotification('Notifikasi Solat Diaktifkan', 'Anda akan menerima pemberitahuan & alunan azan apabila masuk waktu solat.');
+            }
+        });
+    }
+
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker didaftarkan:', reg.scope))
+                .catch(err => console.log('Service Worker gagal:', err));
+        }
+    }
+
     function playAzanNotification(prayerKey, prayerName) {
         if (state.prayerNotifs && state.prayerNotifs[prayerKey] === false) {
             console.log(`Pemberitahuan bagi ${prayerName} (${prayerKey}) telah dinyahaktifkan oleh pengguna.`);
@@ -536,6 +579,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalZoneCode) modalZoneCode.textContent = `${zoneInfo.code} - ${zoneInfo.state}`;
         if (dom.zoneCodeDisplay) dom.zoneCodeDisplay.innerHTML = `${zoneInfo.code} <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;"></i>`;
         if (dom.zoneNameDisplay) dom.zoneNameDisplay.textContent = `${zoneInfo.state} - ${zoneInfo.name}`;
+
+        // Pengiraan Arah Kiblat Dinamik Mengikut Koordinat Zon JAKIM
+        if (zoneInfo && zoneInfo.lat && zoneInfo.lng) {
+            calculateQiblaDirection(zoneInfo.lat, zoneInfo.lng);
+        }
 
         // Semak LocalStorage Cache dahulu
         const cacheKey = `prayer_cache_${zoneCode}_${getLocalDateString()}`;

@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=3.2.0">
+    <link rel="stylesheet" href="style.css?v=3.3.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -213,26 +213,36 @@
         <!-- TAB 3: TASBIH DIGITAL -->
         <section id="tab-tasbih" class="tab-content">
             <div class="tasbih-box">
-                <h2 style="font-size:1.2rem; color:var(--accent-gold);">Tasbih Digital</h2>
-                <div class="arabic-font" id="tasbih-phrase" style="font-size:1.45rem; color:var(--text-primary); font-family:var(--font-uthmani);">
-                    سُبْحَانَ اللَّهِ
+                <div class="tasbih-header-row">
+                    <h2 style="font-size:1.15rem; color:var(--accent-gold); font-weight:800;">Tasbih Digital</h2>
+                    <div class="tasbih-actions-top">
+                        <button class="btn-tasbih-action btn-switch" id="btn-tasbih-switch" onclick="switchTasbihPhrase()" title="Tukar Kalimah Zikir">
+                            <i class="fa-solid fa-arrows-rotate"></i> Tukar Zikir
+                        </button>
+                        <button class="btn-tasbih-action btn-reset" id="btn-tasbih-reset" onclick="resetTasbih()" title="Reset Kaunter Ke 0">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
                 </div>
-                <p id="tasbih-translation" style="font-size:0.85rem; color:var(--text-secondary);">
-                    Subhanallah (Maha Suci Allah)
-                </p>
 
-                <div class="tasbih-count-display" id="tasbih-counter">0</div>
+                <!-- KAD KALIMAH ZIKIR -->
+                <div class="tasbih-phrase-card">
+                    <div class="arabic-font" id="tasbih-phrase" style="font-size:1.8rem; color:var(--text-primary); font-family:var(--font-uthmani); line-height:1.4;">
+                        سُبْحَانَ اللَّهِ
+                    </div>
+                    <p id="tasbih-translation" style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">
+                        Subhanallah (Maha Suci Allah)
+                    </p>
+                </div>
 
-                <button class="btn-tasbih-tap" id="btn-tasbih-count">
-                    TEKAN (ZIKIR)
-                </button>
+                <!-- BACAAN KAUNTER UTAMA -->
+                <div class="tasbih-count-display-large" id="tasbih-counter">0</div>
 
-                <div class="tasbih-controls">
-                    <button class="btn-tasbih-action btn-reset" id="btn-tasbih-reset" onclick="resetTasbih()" title="Reset Kaunter Ke 0">
-                        <i class="fa-solid fa-rotate-left"></i> Reset
-                    </button>
-                    <button class="btn-tasbih-action btn-switch" id="btn-tasbih-switch" onclick="switchTasbihPhrase()" title="Tukar Kalimah Zikir">
-                        <i class="fa-solid fa-arrows-rotate"></i> Tukar Zikir
+                <!-- BUTANG BULAT BESAR TEKAN ZIKIR (REKABENTUK ERGONOMIK IBU JARI) -->
+                <div class="tasbih-bottom-tap-area">
+                    <button class="btn-tasbih-tap-circular" id="btn-tasbih-count" title="Tekan Untuk Bilang Zikir">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                        <span>TEKAN ZIKIR</span>
                     </button>
                 </div>
             </div>
@@ -259,7 +269,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v3.2.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v3.3.0</span>
         </footer>
     </main>
 
@@ -623,7 +633,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=3.2.0"></script>
+    <script src="app.js?v=3.3.0"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>
