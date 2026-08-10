@@ -285,26 +285,66 @@
         </div>
     </nav>
 
-    <!-- BANNER PROMPT NOTIFIKASI -->
-    <div class="pwa-banner" id="notif-banner" style="bottom:120px; border-color:var(--accent-emerald);">
-        <div class="pwa-text">
-            <i class="fa-solid fa-bell-ring" style="color:var(--accent-gold); margin-right:8px;"></i>
-            Aktifkan Push Notification Azan bila masuk waktu solat!
-        </div>
-        <button class="btn-gps" id="btn-enable-notif-banner" style="padding:6px 12px; font-size:0.75rem;">
-            Aktifkan
-        </button>
-    </div>
+    <!-- MODAL ONBOARDING SELAMAT DATANG (FIRST-TIME) -->
+    <div class="modal-overlay" id="modal-onboarding" style="z-index:9999; align-items:flex-end; padding:0;">
+        <div class="onboarding-sheet" id="onboarding-sheet">
+            <!-- Decorative top pill -->
+            <div class="onboarding-pill"></div>
 
-    <!-- BANNER PROMPT INSTALL PWA -->
-    <div class="pwa-banner" id="pwa-banner">
-        <div class="pwa-text">
-            <i class="fa-solid fa-download" style="color:var(--accent-gold); margin-right:8px;"></i>
-            Pasang Aplikasi PWA Waktu Solat pada telefon anda!
+            <!-- Mosque icon -->
+            <div class="onboarding-icon-wrap">
+                <div class="onboarding-mosque-ring">
+                    <i class="fa-solid fa-mosque onboarding-mosque-icon"></i>
+                </div>
+            </div>
+
+            <!-- Headings -->
+            <h2 class="onboarding-title">Assalamualaikum! 🌙</h2>
+            <p class="onboarding-subtitle">Selamat menggunakan <strong>Waktu Solat Malaysia</strong> — panduan harian ibadah berasaskan data rasmi JAKIM.</p>
+
+            <!-- Step 1: Push Notification -->
+            <div class="onboarding-step" id="onboarding-step-notif">
+                <div class="onboarding-step-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="onboarding-step-text">
+                    <div class="onboarding-step-title">Notifikasi Azan</div>
+                    <div class="onboarding-step-desc">Terima pemberitahuan & alunan azan setiap masuk waktu solat</div>
+                </div>
+                <div class="onboarding-step-status" id="notif-step-status">
+                    <span class="step-badge step-badge-pending">Belum</span>
+                </div>
+            </div>
+
+            <!-- Step 2: Install PWA -->
+            <div class="onboarding-step" id="onboarding-step-pwa" style="display:none;">
+                <div class="onboarding-step-icon" style="background: linear-gradient(135deg, #059669, #10b981);">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <div class="onboarding-step-text">
+                    <div class="onboarding-step-title">Pasang Aplikasi</div>
+                    <div class="onboarding-step-desc">Pasang terus ke skrin utama telefon untuk akses pantas tanpa browser</div>
+                </div>
+                <div class="onboarding-step-status" id="pwa-step-status">
+                    <span class="step-badge step-badge-pending">Belum</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <button class="onboarding-btn-primary" id="onboarding-btn-notif" onclick="onboardingRequestNotif()">
+                <i class="fa-solid fa-bell"></i>
+                Aktifkan Notifikasi Azan
+            </button>
+
+            <button class="onboarding-btn-secondary" id="onboarding-btn-pwa" style="display:none;" onclick="onboardingInstallPwa()">
+                <i class="fa-solid fa-download"></i>
+                Pasang Aplikasi ke Telefon
+            </button>
+
+            <button class="onboarding-btn-skip" id="onboarding-btn-finish" onclick="closeOnboarding()">
+                Mulakan Aplikasi →
+            </button>
         </div>
-        <button class="btn-gps" id="btn-install-pwa" style="padding:6px 12px; font-size:0.75rem;">
-            Pasang Sekarang
-        </button>
     </div>
 
     <!-- MODAL TETAPAN NOTIFIKASI & ZON JAKIM -->

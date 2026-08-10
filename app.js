@@ -213,9 +213,123 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkFirstTimeInstallGuide() {
-        // Modal panduan PWA tidak dibuka secara automatik supaya tidak menghalang skrin utama
-        // Pengguna boleh membuka panduan ini bila-bila masa melalui ikon telefon (📱) di header
+        // Auto-buka onboarding welcome pada kali pertama sahaja
+        const hasSeen = localStorage.getItem('hasSeenOnboarding_v1');
+        if (!hasSeen) {
+            setTimeout(() => openOnboarding(), 800);
+        }
     }
+
+    // --- ONBOARDING WELCOME MODAL ---
+    function openOnboarding() {
+        const modal = document.getElementById('modal-onboarding');
+        if (!modal) return;
+        modal.classList.add('active');
+
+        // Show PWA step if prompt available
+        const pwaBtnRow = document.getElementById('onboarding-step-pwa');
+        const pwaBtnAction = document.getElementById('onboarding-btn-pwa');
+        if (state.deferredInstallPrompt && pwaBtnRow && pwaBtnAction) {
+            pwaBtnRow.style.display = 'flex';
+            pwaBtnAction.style.display = 'flex';
+        }
+
+        // Update notif status if already granted
+        if ('Notification' in window && Notification.permission === 'granted') {
+            _onboardingMarkNotifDone();
+        }
+    }
+
+    function closeOnboarding() {
+        const modal = document.getElementById('modal-onboarding');
+        if (!modal) return;
+        modal.classList.remove('active');
+        localStorage.setItem('hasSeenOnboarding_v1', 'true');
+    }
+    window.closeOnboarding = closeOnboarding;
+
+    function _onboardingMarkNotifDone() {
+        const badge = document.querySelector('#notif-step-status .step-badge');
+        const step = document.getElementById('onboarding-step-notif');
+        const btn = document.getElementById('onboarding-btn-notif');
+        if (badge) { badge.textContent = '✓ Aktif'; badge.className = 'step-badge step-badge-done'; }
+        if (step) step.classList.add('step-done');
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Notifikasi Diaktifkan';
+            btn.style.opacity = '0.65';
+            btn.disabled = true;
+        }
+        // Show PWA step & btn after notif done
+        const pwaBtnRow = document.getElementById('onboarding-step-pwa');
+        const pwaBtnAction = document.getElementById('onboarding-btn-pwa');
+        if (state.deferredInstallPrompt) {
+            if (pwaBtnRow) pwaBtnRow.style.display = 'flex';
+            if (pwaBtnAction) pwaBtnAction.style.display = 'flex';
+        }
+        // Update finish button label
+        const finishBtn = document.getElementById('onboarding-btn-finish');
+        if (finishBtn) finishBtn.textContent = 'Mulakan Aplikasi →';
+    }
+
+    function _onboardingMarkPwaDone() {
+        const badge = document.querySelector('#pwa-step-status .step-badge');
+        const step = document.getElementById('onboarding-step-pwa');
+        const btn = document.getElementById('onboarding-btn-pwa');
+        if (badge) { badge.textContent = '✓ Dipasang'; badge.className = 'step-badge step-badge-done'; }
+        if (step) step.classList.add('step-done');
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Aplikasi Dipasang';
+            btn.style.opacity = '0.65';
+            btn.disabled = true;
+        }
+    }
+
+    window.onboardingRequestNotif = function() {
+        if (!('Notification' in window)) {
+            alert('Notifikasi tidak disokong pada peranti ini.');
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            _onboardingMarkNotifDone();
+            return;
+        }
+        Notification.requestPermission().then(permission => {
+            checkNotificationStatus();
+            if (permission === 'granted') {
+                sendPushNotification('Notifikasi Solat Diaktifkan! 🕌', 'Anda akan menerima alunan azan apabila masuk waktu solat. Alhamdulillah!');
+                _onboardingMarkNotifDone();
+            } else {
+                const badge = document.querySelector('#notif-step-status .step-badge');
+                if (badge) { badge.textContent = 'Dihalang'; badge.className = 'step-badge step-badge-skip'; }
+                const btn = document.getElementById('onboarding-btn-notif');
+                if (btn) { btn.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifikasi Dihalang'; btn.style.opacity = '0.65'; btn.disabled = true; }
+                // Still show PWA step
+                const pwaBtnRow = document.getElementById('onboarding-step-pwa');
+                const pwaBtnAction = document.getElementById('onboarding-btn-pwa');
+                if (state.deferredInstallPrompt) {
+                    if (pwaBtnRow) pwaBtnRow.style.display = 'flex';
+                    if (pwaBtnAction) pwaBtnAction.style.display = 'flex';
+                }
+            }
+        });
+    };
+
+    window.onboardingInstallPwa = function() {
+        if (!state.deferredInstallPrompt) {
+            const modal = document.getElementById('modal-install-guide');
+            if (modal) modal.classList.add('active');
+            closeOnboarding();
+            return;
+        }
+        state.deferredInstallPrompt.prompt();
+        state.deferredInstallPrompt.userChoice.then(result => {
+            if (result.outcome === 'accepted') {
+                _onboardingMarkPwaDone();
+                state.deferredInstallPrompt = null;
+                setTimeout(() => closeOnboarding(), 1200);
+            }
+        });
+    };
 
     // --- 1. TEMA VISUAL ---
     function applyTheme(themeName) {
