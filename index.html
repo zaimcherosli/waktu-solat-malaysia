@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=3.0.0">
+    <link rel="stylesheet" href="style.css?v=3.1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -36,9 +36,6 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-icon" id="btn-test-azan-header" onclick="testAzanHeader()" title="Uji Alunan Azan">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
                 <button class="btn-icon" id="btn-open-install-guide" onclick="openPwaInstallGuide()" title="Panduan Pasang Aplikasi (Install App)">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                 </button>
@@ -97,11 +94,8 @@
                         </div>
                     </div>
 
-                    <div class="next-time-exact" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
-                        <span><i class="fa-regular fa-clock" style="margin-right:3px;"></i> Masuk waktu pada <span id="display-next-prayer-time">01:21 PM</span></span>
-                        <button class="btn-gps" onclick="testAzanHeader()" style="padding:2px 8px; font-size:0.68rem; background:rgba(217,119,6,0.15); color:var(--accent-gold); border:1px solid rgba(217,119,6,0.3); border-radius:6px;">
-                            <i class="fa-solid fa-volume-high"></i> Uji Azan
-                        </button>
+                    <div class="next-time-exact">
+                        <i class="fa-regular fa-clock" style="margin-right:4px;"></i> Masuk waktu pada <span id="display-next-prayer-time">01:21 PM</span>
                     </div>
                 </div>
             </div>
@@ -265,7 +259,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v3.0.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v3.1.0</span>
         </footer>
     </main>
 
@@ -629,7 +623,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=3.0.0"></script>
+    <script src="app.js?v=3.1.0"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>
