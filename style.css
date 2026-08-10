@@ -138,8 +138,10 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 8px 12px 64px 12px;
+    padding: 8px 12px 60px 12px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* --- HEADER & TOP BAR --- */
@@ -643,12 +645,17 @@ header.top-bar {
     letter-spacing: 0.4px;
 }
 
-/* --- TAB SECTIONS (KIBLAT, TASBIH, DOA) --- */
+/* --- TAB SECTIONS (WAKTU SOLAT, KIBLAT, TASBIH, DOA) --- */
 .tab-content {
     display: none;
+    width: 100%;
 }
 .tab-content.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+    gap: 8px;
     animation: fadeIn 0.25s ease;
 }
 
@@ -1396,4 +1403,45 @@ input:checked + .slider:before {
 .btn-primary-action:hover {
     opacity: 0.95;
     transform: translateY(-1px);
+}
+
+/* --- PENJARAKAN KANDUNGAN PWA UNTUK SKRIN TELEFON TINGGI (>680px & >740px) --- */
+@media (min-height: 680px) {
+    .tab-content.active {
+        gap: 10px;
+    }
+    .hero-card {
+        padding: 16px 12px 14px 12px;
+    }
+    .timer-value {
+        width: 52px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+    .prayer-card {
+        padding: 10px 8px;
+    }
+    .islamic-quote-card {
+        padding: 12px 14px;
+    }
+}
+
+@media (min-height: 740px) {
+    .tab-content.active {
+        gap: 14px;
+    }
+    .hero-card {
+        padding: 18px 14px 16px 14px;
+    }
+    .timer-value {
+        width: 54px;
+        height: 52px;
+        font-size: 1.6rem;
+    }
+    .prayer-card {
+        padding: 12px 10px;
+    }
+    .islamic-quote-card {
+        padding: 14px 16px;
+    }
 }
