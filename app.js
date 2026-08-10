@@ -543,6 +543,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function showAppNotificationToast(title, body) {
+        const existing = document.getElementById('app-notification-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'app-notification-toast';
+        toast.className = 'app-notification-toast';
+        toast.innerHTML = `
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #064e3b, #059669); color:#fbbf24; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; box-shadow:0 4px 12px rgba(6,78,59,0.3);">
+                    <i class="fa-solid fa-bell fa-bounce"></i>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:800; font-size:0.92rem; color:#0f172a;">${title}</div>
+                    <div style="font-size:0.78rem; color:#475569; margin-top:2px; line-height:1.35;">${body}</div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#94a3b8; font-size:1rem; cursor:pointer; padding:2px;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('active'), 80);
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 6000);
+    }
+    window.showAppNotificationToast = showAppNotificationToast;
+
+    function sendPushNotification(title, body) {
+        // Paparkan sentiasa In-App Visual Banner Toast
+        showAppNotificationToast(title, body);
+
+        if (!('Notification' in window)) return;
+
+        if (Notification.permission === 'granted') {
+            const options = {
+                body: body,
+                icon: 'icons/icon-192.png',
+                badge: 'icons/icon-192.png',
+                vibrate: [500, 200, 500, 200, 1000],
+                tag: 'waktu-solat-notification',
+                renotify: true,
+                requireInteraction: true
+            };
+
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, options).catch(() => {
+                        try { new Notification(title, options); } catch(e) {}
+                    });
+                }).catch(() => {
+                    try { new Notification(title, options); } catch(e) {}
+                });
+            } else {
+                try { new Notification(title, options); } catch(e) {}
+            }
+        }
+    }
+    window.sendPushNotification = sendPushNotification;
+
     function playAzanNotification(prayerKey, prayerName) {
         if (state.prayerNotifs && state.prayerNotifs[prayerKey] === false) {
             console.log(`Pemberitahuan bagi ${prayerName} (${prayerKey}) telah dinyahaktifkan oleh pengguna.`);
