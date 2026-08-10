@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', themeName);
         localStorage.setItem('app_theme', themeName);
 
-        dom.themeCards.forEach(card => {
+        document.querySelectorAll('.theme-card').forEach(card => {
             if (card.dataset.themeVal === themeName) {
                 card.classList.add('selected');
             } else {
@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    window.applyTheme = applyTheme;
 
     // --- 2. AZAN AUDIO & NOTIFIKASI PUSH ---
     function updateAudioButton() {

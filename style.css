@@ -263,17 +263,17 @@ header.top-bar {
 
 /* --- KAD BANNER SOLAT SETERUSNYA (HERO) --- */
 .hero-card {
-    background: #fdfcf7;
+    background: var(--bg-card);
     background-image: url('images/hero-minaret-bg.jpg');
     background-size: cover;
     background-position: center;
     border-radius: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     padding: 12px 10px 10px 10px;
     margin-bottom: 10px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 24px var(--shadow-color);
 }
 
 .mihrab-arch-overlay {
@@ -427,14 +427,14 @@ header.top-bar {
 }
 
 .prayer-card {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 14px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--border-color);
     padding: 8px 6px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 3px 12px var(--shadow-color);
     position: relative;
     overflow: hidden;
     transition: all 0.2s ease;
@@ -454,9 +454,9 @@ header.top-bar {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: #f0fdf4;
-    border: 1px solid #e2e8f0;
-    color: #046c4e;
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    color: var(--accent-gold);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -473,7 +473,7 @@ header.top-bar {
 .prayer-title {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     line-height: 1.1;
     white-space: nowrap;
     overflow: hidden;
@@ -482,7 +482,7 @@ header.top-bar {
 
 .prayer-arabic {
     font-size: 0.62rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-family: var(--font-arabic);
     line-height: 1;
     white-space: nowrap;
@@ -493,7 +493,7 @@ header.top-bar {
 .prayer-time {
     font-size: 0.82rem;
     font-weight: 800;
-    color: #046c4e;
+    color: var(--text-primary);
     white-space: nowrap;
     flex-shrink: 0;
     text-align: right;
@@ -573,25 +573,25 @@ header.top-bar {
 
 /* ISLAMIC QUOTE CARD */
 .islamic-quote-card {
-    background: #ffffff;
-    background-image: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.92) 50%, rgba(255, 255, 255, 0.45) 100%), url('images/mosque-quote-bg.jpg');
+    background: var(--bg-card);
+    background-image: linear-gradient(90deg, var(--bg-card) 0%, rgba(255, 255, 255, 0.45) 100%), url('images/mosque-quote-bg.jpg');
     background-size: cover;
     background-position: center right;
     border-radius: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     padding: 10px 12px;
     display: flex;
     gap: 8px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 3px 12px var(--shadow-color);
     margin-bottom: 10px;
 }
 
 .quote-icon {
     font-size: 1.6rem;
     line-height: 1;
-    color: #046c4e;
+    color: var(--accent-gold);
     font-family: serif;
     font-weight: 800;
     flex-shrink: 0;
@@ -599,14 +599,14 @@ header.top-bar {
 
 .quote-text {
     font-size: 0.75rem;
-    color: #0f172a;
+    color: var(--text-primary);
     line-height: 1.4;
     font-weight: 600;
 }
 
 .quote-ref {
     font-size: 0.68rem;
-    color: #046c4e;
+    color: var(--accent-gold);
     font-weight: 700;
     margin-top: 3px;
 }

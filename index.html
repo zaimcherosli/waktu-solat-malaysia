@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=2.0.5">
+    <link rel="stylesheet" href="style.css?v=2.1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -38,16 +38,6 @@
             <div class="header-actions">
                 <button class="btn-icon" id="btn-open-install-guide" onclick="openPwaInstallGuide()" title="Panduan Pasang Aplikasi (Install App)">
                     <i class="fa-solid fa-mobile-screen-button"></i>
-                </button>
-                <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
-                    <i class="fa-solid fa-bell" id="notif-icon"></i>
-                    <span class="notif-badge-dot"></span>
-                </button>
-                <button class="btn-icon" id="btn-open-theme" title="Tukar Tema Visual">
-                    <i class="fa-solid fa-palette"></i>
-                </button>
-                <button class="btn-icon" id="btn-toggle-audio" title="Audio Azan">
-                    <i class="fa-solid fa-volume-high" id="audio-icon"></i>
                 </button>
                 <button class="btn-icon" id="btn-open-settings" title="Tetapan & Zon">
                     <i class="fa-solid fa-gear"></i>
@@ -269,7 +259,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.0.5</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.1.0</span>
         </footer>
     </main>
 
@@ -342,6 +332,44 @@
                         <button class="btn-gps" id="btn-auto-gps" style="padding:6px 10px; font-size:0.75rem;">
                             <i class="fa-solid fa-location-crosshairs"></i> GPS
                         </button>
+                    </div>
+                </div>
+
+                <!-- PILIHAN TEMA VISUAL APLIKASI -->
+                <div style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:10px;">
+                    <div style="font-weight:700; color:var(--accent-gold); font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-palette"></i> Tema Visual Warna PWA
+                    </div>
+                    <div style="font-size:0.78rem; color:var(--text-secondary);">Pilih warna tema kegemaran anda:</div>
+                    <div class="theme-options">
+                        <div class="theme-card selected" data-theme-val="emerald" onclick="applyTheme('emerald')">
+                            <div class="theme-preview" style="background:#06140e;">
+                                <div style="flex:1; background:#e5b95f; border-radius:4px;"></div>
+                                <div style="flex:1; background:#10b981; border-radius:4px;"></div>
+                            </div>
+                            <span>Zamrud Emas</span>
+                        </div>
+                        <div class="theme-card" data-theme-val="midnight" onclick="applyTheme('midnight')">
+                            <div class="theme-preview" style="background:#090d16;">
+                                <div style="flex:1; background:#38bdf8; border-radius:4px;"></div>
+                                <div style="flex:1; background:#818cf8; border-radius:4px;"></div>
+                            </div>
+                            <span>Malam Aurora</span>
+                        </div>
+                        <div class="theme-card" data-theme-val="desert" onclick="applyTheme('desert')">
+                            <div class="theme-preview" style="background:#16120e;">
+                                <div style="flex:1; background:#e0a96d; border-radius:4px;"></div>
+                                <div style="flex:1; background:#f43f5e; border-radius:4px;"></div>
+                            </div>
+                            <span>Pasir Sahaja</span>
+                        </div>
+                        <div class="theme-card" data-theme-val="suci" onclick="applyTheme('suci')">
+                            <div class="theme-preview" style="background:#f4f6f8;">
+                                <div style="flex:1; background:#0d9488; border-radius:4px;"></div>
+                                <div style="flex:1; background:#059669; border-radius:4px;"></div>
+                            </div>
+                            <span>Mod Terang (Suci)</span>
+                        </div>
                     </div>
                 </div>
 
@@ -555,7 +583,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=2.0.5"></script>
+    <script src="app.js?v=2.1.0"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>
