@@ -728,13 +728,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetTasbih() {
         state.tasbihCount = 0;
         localStorage.setItem('tasbih_count', 0);
-        dom.tasbihCounter.textContent = 0;
+        if (dom.tasbihCounter) dom.tasbihCounter.textContent = 0;
     }
+    window.resetTasbih = resetTasbih;
 
     function switchTasbihPhrase() {
         state.tasbihIndex = (state.tasbihIndex + 1) % TASBIH_PHRASES.length;
         updateTasbihUI();
     }
+    window.switchTasbihPhrase = switchTasbihPhrase;
 
     // --- 10. MODAL ZON & TEMA ---
     function renderZoneList(filter = '') {

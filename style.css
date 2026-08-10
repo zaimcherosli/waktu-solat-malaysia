@@ -784,7 +784,49 @@ header.top-bar {
 
 .tasbih-controls {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    width: 100%;
+}
+
+.btn-tasbih-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-tasbih-action.btn-reset {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+.btn-tasbih-action.btn-reset:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+.btn-tasbih-action.btn-switch {
+    background: #f0fdf4;
+    color: #046c4e;
+    border-color: #a7f3d0;
+}
+
+.btn-tasbih-action.btn-switch:hover {
+    background: #dcfce7;
+    color: #023829;
+    border-color: #10b981;
 }
 
 /* DOA HARIAN LIST */
