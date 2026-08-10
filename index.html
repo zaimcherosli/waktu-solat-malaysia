@@ -12,8 +12,13 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=1.2.7">
+    <link rel="stylesheet" href="style.css?v=1.3.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -27,12 +32,13 @@
                 </div>
                 <div class="brand-text">
                     <h1>Solat Malaysia</h1>
-                    <span id="current-live-time">--:--:--</span>
+                    <span class="brand-subtitle">Panduan harian, ibadah lebih tenang</span>
                 </div>
             </div>
             <div class="header-actions">
                 <button class="btn-icon" id="btn-request-notif" title="Notifikasi Azan">
                     <i class="fa-solid fa-bell" id="notif-icon"></i>
+                    <span class="notif-badge-dot"></span>
                 </button>
                 <button class="btn-icon" id="btn-open-theme" title="Tukar Tema Visual">
                     <i class="fa-solid fa-palette"></i>
@@ -54,106 +60,138 @@
         <section id="tab-solat" class="tab-content active">
             <!-- HERO BANNER SOLAT SETERUSNYA -->
             <div class="hero-card">
-                <div class="date-bar">
-                    <span id="display-gregorian-date">---, -- ---- ----</span>
-                    <span id="display-hijri-date" class="arabic-font" style="font-size:0.95rem; font-weight:700;">--- ---- ----</span>
+                <!-- MIHRAB ISLAMIC ARCH TOP OVERLAY -->
+                <div class="mihrab-arch-overlay">
+                    <svg viewBox="0 0 500 60" preserveAspectRatio="none">
+                        <path d="M 0 0 L 0 20 Q 200 20 230 10 Q 250 0 270 10 Q 300 20 500 20 L 500 0 Z" fill="#022c22"/>
+                    </svg>
                 </div>
-                
-                <div class="next-prayer-badge">WAKTU SOLAT SETERUSNYA</div>
-                <div class="next-prayer-name" id="display-next-prayer-name">---</div>
 
-                <!-- COUNTDOWN TIMER -->
-                <div class="countdown-container">
-                    <div class="countdown-box">
-                        <div class="timer-unit">
-                            <div class="timer-value" id="cd-hours">00</div>
-                            <div class="timer-label">Jam</div>
+                <div class="date-bar">
+                    <div class="date-bar-left">
+                        <i class="fa-regular fa-calendar-check" style="color:var(--accent-gold); font-size:1.1rem;"></i>
+                        <div>
+                            <span id="display-gregorian-date" class="date-gregorian">Isnin, 10 Ogos 2026</span>
+                            <div id="display-hijri-date" class="date-hijri">26 Safar 1448H</div>
                         </div>
-                        <div class="timer-sep">:</div>
-                        <div class="timer-unit">
-                            <div class="timer-value" id="cd-minutes">00</div>
-                            <div class="timer-label">Minit</div>
-                        </div>
-                        <div class="timer-sep">:</div>
-                        <div class="timer-unit">
-                            <div class="timer-value" id="cd-seconds">00</div>
-                            <div class="timer-label">Saat</div>
+                    </div>
+                    <div class="date-bar-right">
+                        <i class="fa-regular fa-clock" style="color:var(--text-muted); font-size:1.1rem;"></i>
+                        <div>
+                            <span id="current-live-time" class="time-live">07:11 AM</span>
+                            <div class="time-zone-lbl">Waktu Malaysia (MYT)</div>
                         </div>
                     </div>
                 </div>
+                
+                <div class="hero-center-body">
+                    <div class="next-prayer-badge">WAKTU SOLAT SETERUSNYA</div>
+                    <div class="next-prayer-name" id="display-next-prayer-name">Zohor</div>
 
-                <div class="next-time-exact">
-                    Masuk waktu pada <span id="display-next-prayer-time">--:--</span>
+                    <!-- COUNTDOWN TIMER -->
+                    <div class="countdown-container">
+                        <div class="countdown-box">
+                            <div class="timer-unit">
+                                <div class="timer-value" id="cd-hours">00</div>
+                                <div class="timer-label">JAM</div>
+                            </div>
+                            <div class="timer-sep">:</div>
+                            <div class="timer-unit">
+                                <div class="timer-value" id="cd-minutes">00</div>
+                                <div class="timer-label">MINIT</div>
+                            </div>
+                            <div class="timer-sep">:</div>
+                            <div class="timer-unit">
+                                <div class="timer-value" id="cd-seconds">00</div>
+                                <div class="timer-label">SAAT</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="next-time-exact">
+                        <i class="fa-regular fa-clock" style="margin-right:4px;"></i> Masuk waktu pada <span id="display-next-prayer-time">01:21 PM</span>
+                    </div>
                 </div>
             </div>
 
             <!-- GRID 6 WAKTU SOLAT -->
             <div class="prayer-grid">
                 <div class="prayer-card" id="card-fajr">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-cloud-moon"></i></div>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Subuh</div>
+                            <div class="prayer-arabic">الفجر</div>
                         </div>
-                        <div class="prayer-arabic">الفجر</div>
                     </div>
-                    <div class="prayer-time" id="time-fajr">--:--</div>
+                    <div class="prayer-time" id="time-fajr">06:01 <span class="ampm">AM</span></div>
                 </div>
 
-                <div class="prayer-card" id="card-syuruk">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-sun"></i></div>
+                <div class="prayer-card active" id="card-syuruk">
+                    <span class="active-now-badge">SEKARANG</span>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-sun"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Syuruk</div>
+                            <div class="prayer-arabic">الشروق</div>
                         </div>
-                        <div class="prayer-arabic">الشروق</div>
                     </div>
-                    <div class="prayer-time" id="time-syuruk">--:--</div>
+                    <div class="prayer-time" id="time-syuruk">07:11 <span class="ampm">AM</span></div>
                 </div>
 
                 <div class="prayer-card" id="card-dhuhr">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-sun"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Zohor</div>
+                            <div class="prayer-arabic">الظهر</div>
                         </div>
-                        <div class="prayer-arabic">الظهر</div>
                     </div>
-                    <div class="prayer-time" id="time-dhuhr">--:--</div>
+                    <div class="prayer-time" id="time-dhuhr">01:21 <span class="ampm">PM</span></div>
                 </div>
 
                 <div class="prayer-card" id="card-asr">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-cloud-sun"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Asar</div>
+                            <div class="prayer-arabic">العصر</div>
                         </div>
-                        <div class="prayer-arabic">العصر</div>
                     </div>
-                    <div class="prayer-time" id="time-asr">--:--</div>
+                    <div class="prayer-time" id="time-asr">04:40 <span class="ampm">PM</span></div>
                 </div>
 
                 <div class="prayer-card" id="card-maghrib">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Maghrib</div>
+                            <div class="prayer-arabic">المغرب</div>
                         </div>
-                        <div class="prayer-arabic">المغرب</div>
                     </div>
-                    <div class="prayer-time" id="time-maghrib">--:--</div>
+                    <div class="prayer-time" id="time-maghrib">07:28 <span class="ampm">PM</span></div>
                 </div>
 
                 <div class="prayer-card" id="card-isha">
-                    <div class="prayer-head">
-                        <div class="prayer-head-left">
-                            <div class="prayer-icon"><i class="fa-solid fa-moon"></i></div>
+                    <div class="prayer-card-inner">
+                        <div class="prayer-icon-box"><i class="fa-solid fa-moon"></i></div>
+                        <div class="prayer-info">
                             <div class="prayer-title">Isyak</div>
+                            <div class="prayer-arabic">العشاء</div>
                         </div>
-                        <div class="prayer-arabic">العشاء</div>
                     </div>
-                    <div class="prayer-time" id="time-isha">--:--</div>
+                    <div class="prayer-time" id="time-isha">08:40 <span class="ampm">PM</span></div>
                 </div>
+            </div>
+
+            <!-- QURANIC VERSE / HADITH BANNER CARD -->
+            <div class="islamic-quote-card">
+                <div class="quote-icon">“</div>
+                <div class="quote-content">
+                    <div class="quote-text">Dirikanlah solat, sesungguhnya solat itu mencegah daripada perbuatan keji dan mungkar.</div>
+                    <div class="quote-ref">— Surah Al-Ankabut (29:45)</div>
+                </div>
+                <div class="quote-bg-illustration"></div>
             </div>
         </section>
 
@@ -297,7 +335,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.2.7</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v1.3.0</span>
         </footer>
     </main>
 
@@ -518,6 +556,6 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=1.2.7"></script>
+    <script src="app.js?v=1.3.0"></script>
 </body>
 </html>

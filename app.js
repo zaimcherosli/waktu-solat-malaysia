@@ -496,16 +496,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Tarikh
         const dateObj = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dom.gregorianDateDisplay.textContent = dateObj.toLocaleDateString('ms-MY', options);
-        dom.hijriDateDisplay.textContent = parseHijriDate(today.hijri);
+        if (dom.gregorianDateDisplay) dom.gregorianDateDisplay.textContent = dateObj.toLocaleDateString('ms-MY', options);
+        if (dom.hijriDateDisplay) dom.hijriDateDisplay.textContent = parseHijriDate(today.hijri);
 
         // Waktu
-        dom.times.fajr.textContent = formatTime12h(today.fajr);
-        dom.times.syuruk.textContent = formatTime12h(today.syuruk);
-        dom.times.dhuhr.textContent = formatTime12h(today.dhuhr);
-        dom.times.asr.textContent = formatTime12h(today.asr);
-        dom.times.maghrib.textContent = formatTime12h(today.maghrib);
-        dom.times.isha.textContent = formatTime12h(today.isha);
+        if (dom.times.fajr) dom.times.fajr.innerHTML = formatTime12h(today.fajr);
+        if (dom.times.syuruk) dom.times.syuruk.innerHTML = formatTime12h(today.syuruk);
+        if (dom.times.dhuhr) dom.times.dhuhr.innerHTML = formatTime12h(today.dhuhr);
+        if (dom.times.asr) dom.times.asr.innerHTML = formatTime12h(today.asr);
+        if (dom.times.maghrib) dom.times.maghrib.innerHTML = formatTime12h(today.maghrib);
+        if (dom.times.isha) dom.times.isha.innerHTML = formatTime12h(today.isha);
 
         updateNextPrayerCountdown();
     }
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12;
-        return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+        return `${hours.toString().padStart(2, '0')}:${minutes} <span class="ampm">${ampm}</span>`;
     }
 
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
@@ -537,8 +537,13 @@ document.addEventListener('DOMContentLoaded', () => {
             { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha, card: dom.cards.isha }
         ];
 
-        // Buang highlight aktif terdahulu
-        Object.values(dom.cards).forEach(c => c.classList.remove('active'));
+        // Buang highlight aktif & lencana SEKARANG terdahulu
+        Object.values(dom.cards).forEach(c => {
+            if (!c) return;
+            c.classList.remove('active');
+            const badge = c.querySelector('.active-now-badge');
+            if (badge) badge.remove();
+        });
 
         let nextPrayer = null;
         let currentActivePrayer = null;
@@ -564,13 +569,19 @@ document.addEventListener('DOMContentLoaded', () => {
             nextPrayer.targetDate = new Date(`${todayStr}T${nextPrayer.timeStr}`);
         }
 
-        if (currentActivePrayer) {
+        if (currentActivePrayer && currentActivePrayer.card) {
             currentActivePrayer.card.classList.add('active');
+            if (!currentActivePrayer.card.querySelector('.active-now-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'active-now-badge';
+                badge.textContent = 'SEKARANG';
+                currentActivePrayer.card.appendChild(badge);
+            }
         }
 
         // Kemas kini Teks
-        dom.nextPrayerNameDisplay.textContent = nextPrayer.name;
-        dom.nextPrayerTimeDisplay.textContent = formatTime12h(nextPrayer.timeStr);
+        if (dom.nextPrayerNameDisplay) dom.nextPrayerNameDisplay.textContent = nextPrayer.name;
+        if (dom.nextPrayerTimeDisplay) dom.nextPrayerTimeDisplay.innerHTML = formatTime12h(nextPrayer.timeStr);
 
         // Pengiraan Perbezaan Masa (Countdown)
         const diffMs = nextPrayer.targetDate - now;
