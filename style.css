@@ -1033,6 +1033,7 @@ nav.bottom-nav {
     backdrop-filter: blur(6px);
     z-index: 2000;
     display: none;
+    pointer-events: none;
     align-items: center;
     justify-content: center;
     padding: 16px;
@@ -1040,6 +1041,7 @@ nav.bottom-nav {
 
 .modal-overlay.active {
     display: flex !important;
+    pointer-events: auto !important;
     animation: fadeIn 0.25s ease;
 }
 

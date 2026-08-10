@@ -131,14 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkFirstTimeInstallGuide() {
-        const hasSeen = localStorage.getItem('hasSeenPwaInstallGuide_v2');
-        if (!hasSeen) {
-            setTimeout(() => {
-                if (dom.modalInstallGuide) {
-                    openModal(dom.modalInstallGuide);
-                }
-            }, 600);
-        }
+        // Modal panduan PWA tidak dibuka secara automatik supaya tidak menghalang skrin utama
+        // Pengguna boleh membuka panduan ini bila-bila masa melalui ikon telefon (📱) di header
     }
 
     // --- 1. TEMA VISUAL ---
@@ -599,6 +593,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
+    function createDateObject(baseDate, timeStr) {
+        const d = baseDate instanceof Date ? baseDate : new Date();
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const day = d.getDate();
+
+        const t24 = parseTimeTo24h(timeStr);
+        const tp = t24.split(':');
+        const hours = parseInt(tp[0], 10) || 0;
+        const minutes = parseInt(tp[1], 10) || 0;
+        const seconds = parseInt(tp[2], 10) || 0;
+
+        return new Date(year, month, day, hours, minutes, seconds);
+    }
+
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
     function updateNextPrayerCountdown() {
         if (!state.prayerData) return;
@@ -628,8 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = 0; i < list.length; i++) {
             if (!list[i].timeStr) continue;
-            const t24 = parseTimeTo24h(list[i].timeStr);
-            const pDate = new Date(`${todayStr}T${t24}`);
+            const pDate = createDateObject(now, list[i].timeStr);
             if (now >= pDate) {
                 currentActivePrayer = list[i];
             } else {
@@ -643,12 +651,9 @@ document.addEventListener('DOMContentLoaded', () => {
             nextPrayer = list[0];
             const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowStr = getLocalDateString(tomorrow);
-            const t24 = parseTimeTo24h(nextPrayer.timeStr);
-            nextPrayer.targetDate = new Date(`${tomorrowStr}T${t24}`);
+            nextPrayer.targetDate = createDateObject(tomorrow, nextPrayer.timeStr);
         } else {
-            const t24 = parseTimeTo24h(nextPrayer.timeStr);
-            nextPrayer.targetDate = new Date(`${todayStr}T${t24}`);
+            nextPrayer.targetDate = createDateObject(now, nextPrayer.timeStr);
         }
 
         if (currentActivePrayer && currentActivePrayer.card) {
@@ -671,10 +676,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pemicu Notifikasi & Azan untuk SEMUA waktu solat yang baru dimasuki (window 0 hingga 60 saat)
         list.forEach(p => {
             if (!p.timeStr) return;
-            const t24 = parseTimeTo24h(p.timeStr);
-            const pDate = new Date(`${todayStr}T${t24}`);
+            const pDate = createDateObject(now, p.timeStr);
             const diffSec = Math.floor((now - pDate) / 1000);
-            const notifKey = `${p.key}_${todayStr}_${t24}`;
+            const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
 
             if (diffSec >= 0 && diffSec <= 60 && state.lastNotificationKey !== notifKey) {
                 state.lastNotificationKey = notifKey;
