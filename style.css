@@ -147,13 +147,13 @@ header.top-bar {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg-header);
-    background-image: url('images/emerald-header-bg.jpg');
+    background: linear-gradient(180deg, rgba(1, 23, 16, 0.95) 0%, rgba(2, 44, 34, 0.98) 100%), url('images/emerald-header-bg.jpg');
     background-size: cover;
     background-position: center;
     padding: 10px 12px 14px 12px;
     color: #ffffff;
-    box-shadow: 0 4px 20px rgba(2, 44, 34, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .header-inner {
@@ -562,6 +562,48 @@ header.top-bar {
     color: #046c4e;
     font-weight: 700;
     margin-top: 3px;
+}
+
+/* --- FOOTER CREDIT WATERMARK --- */
+.app-credit-footer {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 12px auto 8px auto;
+    padding-bottom: 2px;
+    letter-spacing: 0.3px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    gap: 4px;
+    width: 100%;
+}
+
+.app-credit-footer a {
+    color: #046c4e;
+    text-decoration: underline;
+    font-weight: 800;
+    transition: color 0.2s ease;
+}
+
+.app-credit-footer a:hover {
+    color: #0f172a;
+}
+
+.version-badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: #046c4e;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.4px;
 }
 
 /* --- TAB SECTIONS (KIBLAT, TASBIH, DOA) --- */
