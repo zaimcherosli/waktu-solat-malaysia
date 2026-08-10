@@ -867,38 +867,54 @@ header.top-bar {
 /* --- BOTTOM NAVIGATION BAR --- */
 nav.bottom-nav {
     position: fixed;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    max-width: 476px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: 480px;
     margin: 0 auto;
     z-index: 1000;
     background: #ffffff;
-    border-radius: 24px;
-    padding: 6px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: 6px 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09);
     border: 1px solid #e2e8f0;
 }
 
 .nav-inner {
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     align-items: center;
+    justify-items: center;
+    width: 100%;
 }
 
 .nav-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 3px;
     color: #64748b;
-    font-size: 0.76rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 18px;
+    padding: 6px 4px;
+    border-radius: 14px;
     border: none;
     background: transparent;
     cursor: pointer;
     transition: all 0.2s ease;
+    width: 100%;
+    text-align: center;
+}
+
+.nav-item i {
+    font-size: 1.1rem;
+}
+
+.nav-item span {
+    white-space: nowrap;
+    display: block;
+    line-height: 1.1;
 }
 
 .nav-item.active {
