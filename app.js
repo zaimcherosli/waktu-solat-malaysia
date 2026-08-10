@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {
             setTimeout(() => {
-                openPwaInstallGuide();
+                openOnboarding();
             }, 700);
         }
     }
@@ -227,15 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!modal) return;
         modal.classList.add('active');
 
-        // Show PWA step if prompt available
-        const pwaBtnRow = document.getElementById('onboarding-step-pwa');
-        const pwaBtnAction = document.getElementById('onboarding-btn-pwa');
-        if (state.deferredInstallPrompt && pwaBtnRow && pwaBtnAction) {
-            pwaBtnRow.style.display = 'flex';
-            pwaBtnAction.style.display = 'flex';
-        }
-
-        // Update notif status if already granted
+        // Update notif status jika sudah dibenarkan
         if ('Notification' in window && Notification.permission === 'granted') {
             _onboardingMarkNotifDone();
         }
