@@ -126,10 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkFirstTimeInstallGuide() {
-        const hasSeen = localStorage.getItem('hasSeenPwaInstallGuide_v1');
+        const hasSeen = localStorage.getItem('hasSeenPwaInstallGuide_v2');
         if (!hasSeen) {
             setTimeout(() => {
-                openModal(dom.modalInstallGuide);
+                if (dom.modalInstallGuide) {
+                    openModal(dom.modalInstallGuide);
+                }
             }, 600);
         }
     }
@@ -762,25 +764,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openModal(modal) {
+        if (!modal) return;
         modal.classList.add('active');
     }
 
     function closeModal(modal) {
+        if (!modal) return;
         modal.classList.remove('active');
     }
 
     // --- 11. EVENT LISTENERS ---
     function setupEventListeners() {
         // Tab Navigation
-        dom.navItems.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.dataset.tab;
-                dom.navItems.forEach(b => b.classList.remove('active'));
-                dom.tabContents.forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
+        if (dom.navItems) {
+            dom.navItems.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.dataset.tab;
+                    dom.navItems.forEach(b => b.classList.remove('active'));
+                    dom.tabContents.forEach(t => t.classList.remove('active'));
+                    btn.classList.add('active');
+                    const targetEl = document.getElementById(targetTab);
+                    if (targetEl) targetEl.classList.add('active');
+                });
             });
-        });
+        }
 
         // GPS Button
         if (dom.btnGps) dom.btnGps.addEventListener('click', detectGPSLocation);
@@ -858,17 +865,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Modal Panduan Install PWA
-        if (dom.btnOpenInstallGuide) dom.btnOpenInstallGuide.addEventListener('click', () => openModal(dom.modalInstallGuide));
+        if (dom.btnOpenInstallGuide) {
+            dom.btnOpenInstallGuide.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(dom.modalInstallGuide);
+            });
+        }
         if (dom.btnCloseInstallGuide) {
             dom.btnCloseInstallGuide.addEventListener('click', () => {
                 closeModal(dom.modalInstallGuide);
-                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+                localStorage.setItem('hasSeenPwaInstallGuide_v2', 'true');
             });
         }
         if (dom.btnDismissInstallGuide) {
             dom.btnDismissInstallGuide.addEventListener('click', () => {
                 closeModal(dom.modalInstallGuide);
-                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+                localStorage.setItem('hasSeenPwaInstallGuide_v2', 'true');
             });
         }
 
@@ -879,7 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === dom.modalSettings) closeModal(dom.modalSettings);
             if (e.target === dom.modalInstallGuide) {
                 closeModal(dom.modalInstallGuide);
-                localStorage.setItem('hasSeenPwaInstallGuide_v1', 'true');
+                localStorage.setItem('hasSeenPwaInstallGuide_v2', 'true');
             }
         });
 
@@ -887,20 +899,22 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             state.deferredInstallPrompt = e;
-            dom.pwaBanner.classList.add('active');
+            if (dom.pwaBanner) dom.pwaBanner.classList.add('active');
         });
 
-        dom.btnInstallPwa.addEventListener('click', () => {
-            if (state.deferredInstallPrompt) {
-                state.deferredInstallPrompt.prompt();
-                state.deferredInstallPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        dom.pwaBanner.classList.remove('active');
-                    }
-                    state.deferredInstallPrompt = null;
-                });
-            }
-        });
+        if (dom.btnInstallPwa) {
+            dom.btnInstallPwa.addEventListener('click', () => {
+                if (state.deferredInstallPrompt) {
+                    state.deferredInstallPrompt.prompt();
+                    state.deferredInstallPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            if (dom.pwaBanner) dom.pwaBanner.classList.remove('active');
+                        }
+                        state.deferredInstallPrompt = null;
+                    });
+                }
+            });
+        }
     }
 
     // --- 12. REGISTER SERVICE WORKER (PWA) ---
