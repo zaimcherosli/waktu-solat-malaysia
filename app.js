@@ -612,14 +612,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: 'icons/icon-192.png',
                 badge: 'icons/icon-192.png',
                 vibrate: [500, 200, 500, 200, 1000],
-                tag: 'waktu-solat-notification',
+                tag: 'waktu-solat-notif-' + Date.now(),
                 renotify: true,
                 requireInteraction: true
             };
 
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, options).catch(() => {
+                    registration.showNotification(title, options).catch(err => {
+                        console.log('SW showNotification fallback:', err);
                         try { new Notification(title, options); } catch(e) {}
                     });
                 }).catch(() => {
