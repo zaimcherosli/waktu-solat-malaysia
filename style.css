@@ -488,9 +488,9 @@ header.top-bar {
 
 /* ACTIVE PRAYER CARD ("SEKARANG") */
 .prayer-card.active {
-    background: #023829;
-    border: 1px solid #064e3b;
-    box-shadow: 0 6px 20px rgba(2, 56, 41, 0.22);
+    background: linear-gradient(135deg, #064e3b 0%, #046c4e 100%);
+    border: 1px solid #059669;
+    box-shadow: 0 4px 16px rgba(4, 108, 78, 0.25);
 }
 
 .prayer-card.active .prayer-icon-box {
