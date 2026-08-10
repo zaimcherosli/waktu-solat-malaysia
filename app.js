@@ -198,18 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INIT APP ---
     function init() {
-        refreshDomElements();
-        applyTheme(state.theme);
-        updateAudioButton();
-        checkNotificationStatus();
-        checkFirstTimeInstallGuide();
-        renderZoneList();
-        loadPrayerData(state.currentZone);
-        setupEventListeners();
-        startLiveClock();
-        updateTasbihUI();
-        loadQuranSurah(localStorage.getItem('last_selected_surah') || '67');
-        registerServiceWorker();
+        try { refreshDomElements(); } catch (e) { console.error('refreshDomElements:', e); }
+        try { applyTheme(state.theme); } catch (e) { console.error('applyTheme:', e); }
+        try { updateAudioButton(); } catch (e) { console.error('updateAudioButton:', e); }
+        try { checkNotificationStatus(); } catch (e) { console.error('checkNotificationStatus:', e); }
+        try { checkFirstTimeInstallGuide(); } catch (e) { console.error('checkFirstTimeInstallGuide:', e); }
+        try { renderZoneList(); } catch (e) { console.error('renderZoneList:', e); }
+        try { loadPrayerData(state.currentZone); } catch (e) { console.error('loadPrayerData:', e); }
+        try { setupEventListeners(); } catch (e) { console.error('setupEventListeners:', e); }
+        try { startLiveClock(); } catch (e) { console.error('startLiveClock:', e); }
+        try { updateTasbihUI(); } catch (e) { console.error('updateTasbihUI:', e); }
+        try { loadQuranSurah(localStorage.getItem('last_selected_surah') || '67'); } catch (e) { console.error('loadQuranSurah:', e); }
+        try { registerServiceWorker(); } catch (e) { console.error('registerServiceWorker:', e); }
     }
 
     function checkFirstTimeInstallGuide() {
@@ -223,24 +223,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', themeName);
         localStorage.setItem('app_theme', themeName);
 
-        document.querySelectorAll('.theme-card').forEach(card => {
-            if (card.dataset.themeVal === themeName) {
-                card.classList.add('selected');
-            } else {
-                card.classList.remove('selected');
-            }
+        const selectedTheme = THEME_PALETTES[themeName] || THEME_PALETTES.emerald;
+        Object.keys(selectedTheme).forEach(prop => {
+            document.documentElement.style.setProperty(prop, selectedTheme[prop]);
         });
+
+        if (dom && dom.themeCards) {
+            dom.themeCards.forEach(card => {
+                if (card.dataset.themeVal === themeName) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+        }
     }
     window.applyTheme = applyTheme;
 
     // --- 2. AZAN AUDIO & NOTIFIKASI PUSH ---
     function updateAudioButton() {
-        if (state.audioEnabled) {
-            dom.audioIcon.className = 'fa-solid fa-volume-high';
-            dom.btnToggleAudio.style.color = 'var(--accent-gold)';
-        } else {
-            dom.audioIcon.className = 'fa-solid fa-volume-xmark';
-            dom.btnToggleAudio.style.color = 'var(--text-muted)';
+        const audioIcon = document.getElementById('audio-icon') || (dom && dom.audioIcon);
+        const btnToggleAudio = document.getElementById('btn-toggle-audio') || (dom && dom.btnToggleAudio);
+
+        if (audioIcon) {
+            audioIcon.className = state.audioEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        }
+        if (btnToggleAudio) {
+            btnToggleAudio.style.color = state.audioEnabled ? 'var(--accent-gold)' : 'var(--text-muted)';
         }
     }
 
