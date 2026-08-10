@@ -526,8 +526,8 @@ header.top-bar {
 
 /* ISLAMIC QUOTE CARD */
 .islamic-quote-card {
-    background: #fdfbf7;
-    background-image: url('images/mosque-quote-bg.jpg');
+    background: #ffffff;
+    background-image: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.92) 50%, rgba(255, 255, 255, 0.45) 100%), url('images/mosque-quote-bg.jpg');
     background-size: cover;
     background-position: center right;
     border-radius: 16px;
@@ -542,7 +542,7 @@ header.top-bar {
 }
 
 .quote-icon {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     line-height: 1;
     color: #046c4e;
     font-family: serif;
@@ -551,9 +551,9 @@ header.top-bar {
 }
 
 .quote-text {
-    font-size: 0.74rem;
-    color: #334155;
-    line-height: 1.38;
+    font-size: 0.75rem;
+    color: #0f172a;
+    line-height: 1.4;
     font-weight: 600;
 }
 
