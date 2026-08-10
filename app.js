@@ -861,6 +861,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Pemicu Notifikasi Surah Al-Waqiah (30 minit selepas Subuh) & Surah Al-Mulk (30 minit selepas Isyak)
+        if (state.prayerData && state.prayerData.fajr && state.prayerData.isha) {
+            const fajrDate = createDateObject(now, state.prayerData.fajr);
+            const ishaDate = createDateObject(now, state.prayerData.isha);
+
+            // 30 minit selepas Subuh (+30 minit)
+            const waqiahTarget = new Date(fajrDate.getTime() + 30 * 60 * 1000);
+            const diffSecWaqiah = Math.floor((now - waqiahTarget) / 1000);
+            const waqiahNotifKey = `waqiah_${todayStr}`;
+
+            if (diffSecWaqiah >= 0 && diffSecWaqiah <= 120 && localStorage.getItem('last_notif_waqiah') !== waqiahNotifKey) {
+                localStorage.setItem('last_notif_waqiah', waqiahNotifKey);
+                sendPushNotification(
+                    'Surah Al-Waqiah 📖 (Masa Pagi)',
+                    'Waktu 30 minit selepas Subuh. Mari membaca Surah Al-Waqiah pembuka rezeki!'
+                );
+                showQuranReminderBanner('56', 'Surah Al-Waqiah 📖', '30 minit selepas Subuh. Tekan untuk membaca Surah Al-Waqiah.');
+            }
+
+            // 30 minit selepas Isyak (+30 minit)
+            const mulkTarget = new Date(ishaDate.getTime() + 30 * 60 * 1000);
+            const diffSecMulk = Math.floor((now - mulkTarget) / 1000);
+            const mulkNotifKey = `mulk_${todayStr}`;
+
+            if (diffSecMulk >= 0 && diffSecMulk <= 120 && localStorage.getItem('last_notif_mulk') !== mulkNotifKey) {
+                localStorage.setItem('last_notif_mulk', mulkNotifKey);
+                sendPushNotification(
+                    'Surah Al-Mulk 🌙 (Masa Malam)',
+                    'Amalan sebelum tidur 30 minit selepas Isyak. Mari membaca Surah Al-Mulk pelindung alam kubur!'
+                );
+                showQuranReminderBanner('67', 'Surah Al-Mulk 🌙', '30 minit selepas Isyak. Tekan untuk membaca Surah Al-Mulk.');
+            }
+        }
+
         const totalSec = Math.max(0, Math.floor(diffMs / 1000));
         const hours = Math.floor(totalSec / 3600);
         const minutes = Math.floor((totalSec % 3600) / 60);
@@ -1365,6 +1399,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     window.switchTab = switchTab;
+
+    function openQuranSurahDirect(surahNumber) {
+        switchTab('tab-quran');
+        const sel = document.getElementById('quran-surah-select');
+        if (sel) {
+            sel.value = String(surahNumber);
+            loadQuranSurah(surahNumber);
+        }
+        const toast = document.getElementById('quran-reminder-toast');
+        if (toast) toast.remove();
+    }
+    window.openQuranSurahDirect = openQuranSurahDirect;
+
+    function showQuranReminderBanner(surahNum, title, desc) {
+        const existing = document.getElementById('quran-reminder-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'quran-reminder-toast';
+        toast.className = 'quran-reminder-toast';
+        toast.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #d97706, #f59e0b); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+                    <i class="fa-solid fa-book-quran"></i>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:800; font-size:0.88rem; color:#0f172a; line-height:1.2;">${title}</div>
+                    <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">${desc}</div>
+                </div>
+                <button onclick="openQuranSurahDirect('${surahNum}')" style="background:linear-gradient(135deg, #064e3b, #059669); color:#fff; border:none; padding:6px 12px; border-radius:10px; font-weight:700; font-size:0.78rem; cursor:pointer; flex-shrink:0;">
+                    Baca
+                </button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('active'), 100);
+    }
+    window.showQuranReminderBanner = showQuranReminderBanner;
 
     // MULA APLIKASI
     if (document.readyState === 'loading') {
