@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { arabic: 'الْحَمْدُ لِلَّهِ', translation: 'Alhamdulillah (Segala Puji Bagi Allah)' },
         { arabic: 'اللَّهُ أَكْبَرُ', translation: 'Allahu Akbar (Allah Maha Besar)' },
         { arabic: 'أَسْتَغْفِرُ اللَّهَ', translation: 'Astaghfirullah (Aku Memohon Ampun Kepada Allah)' },
-        { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', translation: 'La ilaha illallah (Tiada Tuhan Melainkan Allah)' }
+        { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', translation: 'La ilaha illallah (Tiada Tuhan Melainkan Allah)' },
+        { arabic: 'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', translation: 'Allahumma Salli \'Ala Muhammad (Ya Allah, Cucurilah Rahmat Ke Atas Nabi Muhammad ﷺ)' },
+        { arabic: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَىٰ نَبِيِّنَا مُحَمَّدٍ', translation: 'Allahumma Salli Wasallim \'Ala Nabiyyina Muhammad (Ya Allah, Cucurilah Rahmat & Sejahtera Ke Atas Nabi ﷺ)' }
     ];
 
     // --- ELEMENTS DOM ---
