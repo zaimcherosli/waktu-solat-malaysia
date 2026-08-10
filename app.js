@@ -325,6 +325,49 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- 1. TEMA VISUAL ---
+    const THEME_PALETTES = {
+        emerald: {
+            '--bg-main': '#05140d',
+            '--bg-card': 'rgba(12, 34, 23, 0.85)',
+            '--bg-card-hover': 'rgba(18, 48, 33, 0.9)',
+            '--accent-gold': '#e5b95f',
+            '--accent-emerald': '#10b981',
+            '--text-primary': '#f8fafc',
+            '--text-secondary': '#94a3b8',
+            '--border-color': 'rgba(229, 185, 95, 0.2)'
+        },
+        midnight: {
+            '--bg-main': '#090d16',
+            '--bg-card': 'rgba(15, 23, 42, 0.85)',
+            '--bg-card-hover': 'rgba(30, 41, 59, 0.9)',
+            '--accent-gold': '#38bdf8',
+            '--accent-emerald': '#818cf8',
+            '--text-primary': '#f8fafc',
+            '--text-secondary': '#94a3b8',
+            '--border-color': 'rgba(56, 189, 248, 0.25)'
+        },
+        desert: {
+            '--bg-main': '#16120e',
+            '--bg-card': 'rgba(35, 26, 20, 0.85)',
+            '--bg-card-hover': 'rgba(50, 38, 30, 0.9)',
+            '--accent-gold': '#e0a96d',
+            '--accent-emerald': '#f43f5e',
+            '--text-primary': '#f8fafc',
+            '--text-secondary': '#a8a29e',
+            '--border-color': 'rgba(224, 169, 109, 0.25)'
+        },
+        suci: {
+            '--bg-main': '#f8fafc',
+            '--bg-card': '#ffffff',
+            '--bg-card-hover': '#f1f5f9',
+            '--accent-gold': '#0d9488',
+            '--accent-emerald': '#059669',
+            '--text-primary': '#0f172a',
+            '--text-secondary': '#475569',
+            '--border-color': '#e2e8f0'
+        }
+    };
+
     function applyTheme(themeName) {
         state.theme = themeName;
         document.documentElement.setAttribute('data-theme', themeName);
