@@ -479,6 +479,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.testAzanHeader = testAzanHeader;
 
+    function unlockAudioOnUserGesture() {
+        if (state.audioUnlocked) return;
+        const audioEl = document.getElementById('azan-audio') || (dom && dom.azanAudio);
+        if (!audioEl) return;
+
+        try {
+            const playPromise = audioEl.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audioEl.pause();
+                    audioEl.currentTime = 0;
+                    state.audioUnlocked = true;
+                    console.log('Mobile audio element successfully UNLOCKED for background Azan playback!');
+                }).catch(err => {
+                    console.log('Mobile audio unlock waiting for user touch:', err);
+                });
+            }
+        } catch(e) {}
+    }
+    window.unlockAudioOnUserGesture = unlockAudioOnUserGesture;
+
+    ['touchstart', 'touchend', 'click', 'pointerdown'].forEach(evt => {
+        document.addEventListener(evt, unlockAudioOnUserGesture, { once: true });
+    });
+
     function playSynthesizedAzanChime() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
