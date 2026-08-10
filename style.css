@@ -138,7 +138,7 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 8px 12px 75px 12px;
+    padding: 8px 12px 64px 12px;
     flex: 1;
 }
 
@@ -604,10 +604,10 @@ header.top-bar {
 /* --- FOOTER CREDIT WATERMARK --- */
 .app-credit-footer {
     text-align: center;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: #64748b;
-    margin: 12px auto 8px auto;
-    padding-bottom: 2px;
+    margin: 10px auto 10px auto;
+    padding: 0;
     letter-spacing: 0.3px;
     display: flex;
     flex-direction: row;
