@@ -286,38 +286,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!('Notification' in window) || Notification.permission !== 'granted') {
             return;
         }
+        const options = {
+            body: body,
+            icon: 'icons/icon-192.png',
+            badge: 'icons/icon-192.png',
+            vibrate: [500, 200, 500, 200, 1000],
+            tag: 'waktu-solat-azan',
+            renotify: true,
+            requireInteraction: true
+        };
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, {
-                    body: body,
-                    icon: 'icons/icon-192.png',
-                    badge: 'icons/icon-192.png',
-                    vibrate: [300, 100, 300, 100, 500]
-                });
+                registration.showNotification(title, options);
             }).catch(() => {
                 try {
-                    new Notification(title, {
-                        body: body,
-                        icon: 'icons/icon-192.png'
-                    });
+                    new Notification(title, options);
                 } catch(e){}
             });
         } else {
             try {
-                new Notification(title, {
-                    body: body,
-                    icon: 'icons/icon-192.png'
-                });
+                new Notification(title, options);
             } catch(e){}
         }
     }
 
-    function playAzanAudio() {
+    function playAzanAudio(prayerName = 'Solat') {
         if (!dom.azanAudio) {
             playSynthesizedAzanChime();
             return;
         }
         try {
+            // Android MediaSession API untuk sokongan audio waktu skrin tertutup (Lock Screen)
+            if ('mediaSession' in navigator) {
+                try {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: `Azan Waktu Solat ${prayerName}`,
+                        artist: `Waktu Solat Malaysia (Zon ${state.currentZone})`,
+                        album: 'JAKIM Malaysia',
+                        artwork: [
+                            { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }
+                        ]
+                    });
+                    navigator.mediaSession.setActionHandler('play', () => { if (dom.azanAudio) dom.azanAudio.play(); });
+                    navigator.mediaSession.setActionHandler('pause', () => { stopAzanAudio(); });
+                    navigator.mediaSession.setActionHandler('stop', () => { stopAzanAudio(); });
+                } catch(e) {}
+            }
+
             dom.azanAudio.currentTime = 0;
             const playPromise = dom.azanAudio.play();
             
