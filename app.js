@@ -581,6 +581,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes} <span class="ampm">${ampm}</span>`;
     }
 
+    function parseTimeTo24h(timeStr) {
+        if (!timeStr) return '00:00:00';
+        let clean = String(timeStr).trim();
+        const isPM = /pm/i.test(clean);
+        const isAM = /am/i.test(clean);
+        clean = clean.replace(/(am|pm)/i, '').trim();
+
+        const parts = clean.split(':');
+        let hours = parseInt(parts[0], 10) || 0;
+        const minutes = parseInt(parts[1], 10) || 0;
+        const seconds = parts[2] ? parseInt(parts[2], 10) : 0;
+
+        if (isPM && hours < 12) hours += 12;
+        if (isAM && hours === 12) hours = 0;
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
     function updateNextPrayerCountdown() {
         if (!state.prayerData) return;
@@ -609,7 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentActivePrayer = null;
 
         for (let i = 0; i < list.length; i++) {
-            const pDate = new Date(`${todayStr}T${list[i].timeStr}`);
+            if (!list[i].timeStr) continue;
+            const t24 = parseTimeTo24h(list[i].timeStr);
+            const pDate = new Date(`${todayStr}T${t24}`);
             if (now >= pDate) {
                 currentActivePrayer = list[i];
             } else {
@@ -624,9 +644,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
             const tomorrowStr = getLocalDateString(tomorrow);
-            nextPrayer.targetDate = new Date(`${tomorrowStr}T${nextPrayer.timeStr}`);
+            const t24 = parseTimeTo24h(nextPrayer.timeStr);
+            nextPrayer.targetDate = new Date(`${tomorrowStr}T${t24}`);
         } else {
-            nextPrayer.targetDate = new Date(`${todayStr}T${nextPrayer.timeStr}`);
+            const t24 = parseTimeTo24h(nextPrayer.timeStr);
+            nextPrayer.targetDate = new Date(`${todayStr}T${t24}`);
         }
 
         if (currentActivePrayer && currentActivePrayer.card) {
@@ -649,9 +671,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pemicu Notifikasi & Azan untuk SEMUA waktu solat yang baru dimasuki (window 0 hingga 60 saat)
         list.forEach(p => {
             if (!p.timeStr) return;
-            const pDate = new Date(`${todayStr}T${p.timeStr}`);
+            const t24 = parseTimeTo24h(p.timeStr);
+            const pDate = new Date(`${todayStr}T${t24}`);
             const diffSec = Math.floor((now - pDate) / 1000);
-            const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
+            const notifKey = `${p.key}_${todayStr}_${t24}`;
 
             if (diffSec >= 0 && diffSec <= 60 && state.lastNotificationKey !== notifKey) {
                 state.lastNotificationKey = notifKey;
@@ -665,9 +688,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = Math.floor((totalSec % 3600) / 60);
         const seconds = totalSec % 60;
 
-        dom.cdHours.textContent = String(hours).padStart(2, '0');
-        dom.cdMinutes.textContent = String(minutes).padStart(2, '0');
-        dom.cdSeconds.textContent = String(seconds).padStart(2, '0');
+        if (dom.cdHours) dom.cdHours.textContent = String(hours).padStart(2, '0');
+        if (dom.cdMinutes) dom.cdMinutes.textContent = String(minutes).padStart(2, '0');
+        if (dom.cdSeconds) dom.cdSeconds.textContent = String(seconds).padStart(2, '0');
     }
 
     // --- 6. JAM DIGITAL REALTIME ---
@@ -1098,6 +1121,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     window.copyVerseText = copyVerseText;
+
+    function openPwaInstallGuide() {
+        if (dom.modalInstallGuide) openModal(dom.modalInstallGuide);
+    }
+    window.openPwaInstallGuide = openPwaInstallGuide;
+
+    function closePwaInstallGuide() {
+        if (dom.modalInstallGuide) closeModal(dom.modalInstallGuide);
+        localStorage.setItem('hasSeenPwaInstallGuide_v2', 'true');
+    }
+    window.closePwaInstallGuide = closePwaInstallGuide;
+
+    function triggerPwaInstallPrompt() {
+        if (state.deferredInstallPrompt) {
+            state.deferredInstallPrompt.prompt();
+            state.deferredInstallPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    if (dom.pwaBanner) dom.pwaBanner.classList.remove('active');
+                }
+                state.deferredInstallPrompt = null;
+            });
+        } else {
+            alert('Petunjuk: Sila tekan menu tiga titik (⋮) di sudut atas kanan browser Chrome anda, kemudian pilih "Add to Home screen" atau "Install App".');
+        }
+    }
+    window.triggerPwaInstallPrompt = triggerPwaInstallPrompt;
+
+    function switchTab(targetTab) {
+        if (!targetTab) return;
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navItems.forEach(btn => {
+            if (btn.dataset.tab === targetTab) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        tabContents.forEach(content => {
+            if (content.id === targetTab) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+
+        if (targetTab === 'tab-quran') {
+            loadQuranSurah(localStorage.getItem('last_selected_surah') || '67');
+        }
+    }
+    window.switchTab = switchTab;
 
     // MULA APLIKASI
     init();

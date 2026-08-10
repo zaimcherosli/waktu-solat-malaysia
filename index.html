@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=2.1.2">
+    <link rel="stylesheet" href="style.css?v=2.2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -259,26 +259,26 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.1.2</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.2.0</span>
         </footer>
     </main>
 
     <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
         <div class="nav-inner">
-            <button class="nav-item active" data-tab="tab-solat">
+            <button class="nav-item active" data-tab="tab-solat" onclick="switchTab('tab-solat')">
                 <i class="fa-solid fa-clock"></i>
                 <span>Waktu Solat</span>
             </button>
-            <button class="nav-item" data-tab="tab-kiblat">
+            <button class="nav-item" data-tab="tab-kiblat" onclick="switchTab('tab-kiblat')">
                 <i class="fa-solid fa-compass"></i>
                 <span>Kiblat</span>
             </button>
-            <button class="nav-item" data-tab="tab-tasbih">
+            <button class="nav-item" data-tab="tab-tasbih" onclick="switchTab('tab-tasbih')">
                 <i class="fa-solid fa-hands-praying"></i>
                 <span>Tasbih</span>
             </button>
-            <button class="nav-item" data-tab="tab-quran">
+            <button class="nav-item" data-tab="tab-quran" onclick="switchTab('tab-quran')">
                 <i class="fa-solid fa-book-quran"></i>
                 <span>Al-Quran</span>
             </button>
@@ -514,7 +514,7 @@
     </div>
 
     <!-- MODAL PANDUAN CARA INSTALL PWA (ANDROID & APPLE) -->
-    <div class="modal-overlay" id="modal-install-guide">
+    <div class="modal-overlay" id="modal-install-guide" onclick="if(event.target===this) closePwaInstallGuide()">
         <div class="modal-body install-guide-modal-body">
             <div class="modal-header">
                 <div class="modal-title-box">
@@ -538,7 +538,7 @@
                         </li>
                         <li>
                             <span class="step-num">2</span>
-                            <span class="step-text">Pilih & tekan <b>"Add to Home screen"</b> atau <b>"Pasang Aplikasi"</b>.</span>
+                            <span class="step-text">Pilih & tekan <b>"Add to Home screen"</b> atau <a href="javascript:void(0)" onclick="triggerPwaInstallPrompt()" style="color:var(--accent-gold); font-weight:800; text-decoration:underline;"><u>Pasang Aplikasi</u></a>.</span>
                         </li>
                         <li>
                             <span class="step-num">3</span>
@@ -583,7 +583,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=2.1.2"></script>
+    <script src="app.js?v=2.2.0"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>
