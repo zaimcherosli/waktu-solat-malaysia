@@ -115,8 +115,90 @@ document.addEventListener('DOMContentLoaded', () => {
         btnInstallPwa: document.getElementById('btn-install-pwa')
     };
 
+    function refreshDomElements() {
+        dom.zoneCodeDisplay = document.getElementById('display-zone-code');
+        dom.zoneNameDisplay = document.getElementById('display-zone-name');
+        dom.liveTimeDisplay = document.getElementById('current-live-time');
+        dom.gregorianDateDisplay = document.getElementById('display-gregorian-date');
+        dom.hijriDateDisplay = document.getElementById('display-hijri-date');
+        dom.nextPrayerNameDisplay = document.getElementById('display-next-prayer-name');
+        dom.nextPrayerTimeDisplay = document.getElementById('display-next-prayer-time');
+        dom.cdHours = document.getElementById('cd-hours');
+        dom.cdMinutes = document.getElementById('cd-minutes');
+        dom.cdSeconds = document.getElementById('cd-seconds');
+        dom.cards = {
+            fajr: document.getElementById('card-fajr'),
+            syuruk: document.getElementById('card-syuruk'),
+            dhuhr: document.getElementById('card-dhuhr'),
+            asr: document.getElementById('card-asr'),
+            maghrib: document.getElementById('card-maghrib'),
+            isha: document.getElementById('card-isha')
+        };
+        dom.times = {
+            fajr: document.getElementById('time-fajr'),
+            syuruk: document.getElementById('time-syuruk'),
+            dhuhr: document.getElementById('time-dhuhr'),
+            asr: document.getElementById('time-asr'),
+            maghrib: document.getElementById('time-maghrib'),
+            isha: document.getElementById('time-isha')
+        };
+        dom.btnGps = document.getElementById('btn-auto-gps');
+        dom.btnOpenZoneModal = document.getElementById('display-zone-code');
+        dom.btnCloseZoneModal = document.getElementById('btn-close-zone');
+        dom.modalZone = document.getElementById('modal-zone');
+        dom.zoneSearchInput = document.getElementById('zone-search');
+        dom.zoneListContainer = document.getElementById('zone-list-container');
+        dom.btnOpenThemeModal = document.getElementById('btn-open-theme');
+        dom.btnCloseThemeModal = document.getElementById('btn-close-theme');
+        dom.modalTheme = document.getElementById('modal-theme');
+        dom.themeCards = document.querySelectorAll('.theme-card');
+        dom.btnOpenInstallGuide = document.getElementById('btn-open-install-guide');
+        dom.btnCloseInstallGuide = document.getElementById('btn-close-install-guide');
+        dom.btnDismissInstallGuide = document.getElementById('btn-dismiss-install-guide');
+        dom.modalInstallGuide = document.getElementById('modal-install-guide');
+        dom.btnToggleAudio = document.getElementById('btn-toggle-audio');
+        dom.audioIcon = document.getElementById('audio-icon');
+        dom.azanAudio = document.getElementById('azan-audio');
+        dom.navItems = document.querySelectorAll('.nav-item');
+        dom.tabContents = document.querySelectorAll('.tab-content');
+        dom.btnRequestNotif = document.getElementById('btn-request-notif');
+        dom.notifIcon = document.getElementById('notif-icon');
+        dom.notifBanner = document.getElementById('notif-banner');
+        dom.btnEnableNotifBanner = document.getElementById('btn-enable-notif-banner');
+        dom.btnOpenSettings = document.getElementById('btn-open-settings');
+        dom.btnCloseSettings = document.getElementById('btn-close-settings');
+        dom.modalSettings = document.getElementById('modal-settings');
+        dom.notifStatusText = document.getElementById('notif-status-text');
+        dom.btnToggleNotifPerm = document.getElementById('btn-toggle-notif-perm');
+        dom.btnTestAzanAudio = document.getElementById('btn-test-azan-audio');
+        dom.btnTestPushNotif = document.getElementById('btn-test-push-notif');
+        dom.toggles = {
+            fajr: document.getElementById('toggle-notif-fajr'),
+            syuruk: document.getElementById('toggle-notif-syuruk'),
+            dhuhr: document.getElementById('toggle-notif-dhuhr'),
+            asr: document.getElementById('toggle-notif-asr'),
+            maghrib: document.getElementById('toggle-notif-maghrib'),
+            isha: document.getElementById('toggle-notif-isha')
+        };
+        dom.compassNeedle = document.getElementById('compass-needle');
+        dom.compassDial = document.getElementById('compass-dial');
+        dom.qiblaDegree = document.getElementById('qibla-degree');
+        dom.qiblaAlignedBadge = document.getElementById('qibla-aligned-badge');
+        dom.compassStatus = document.getElementById('compass-status');
+        dom.btnRequestCompass = document.getElementById('btn-request-compass');
+        dom.tasbihPhrase = document.getElementById('tasbih-phrase');
+        dom.tasbihTranslation = document.getElementById('tasbih-translation');
+        dom.tasbihCounter = document.getElementById('tasbih-counter');
+        dom.btnTasbihCount = document.getElementById('btn-tasbih-count');
+        dom.btnTasbihReset = document.getElementById('btn-tasbih-reset');
+        dom.btnTasbihSwitch = document.getElementById('btn-tasbih-switch');
+        dom.pwaBanner = document.getElementById('pwa-banner');
+        dom.btnInstallPwa = document.getElementById('btn-install-pwa');
+    }
+
     // --- INIT APP ---
     function init() {
+        refreshDomElements();
         applyTheme(state.theme);
         updateAudioButton();
         checkNotificationStatus();
@@ -699,11 +781,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. JAM DIGITAL REALTIME ---
     function startLiveClock() {
-        setInterval(() => {
+        const updateClock = () => {
             const now = new Date();
-            dom.liveTimeDisplay.textContent = now.toLocaleTimeString('ms-MY', { hour12: false });
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+
+            const liveEl = document.getElementById('current-live-time') || (dom && dom.liveTimeDisplay);
+            if (liveEl) liveEl.textContent = timeStr;
+
             updateNextPrayerCountdown();
-        }, 1000);
+        };
+
+        updateClock();
+        setInterval(updateClock, 1000);
     }
 
     // --- 7. AUTO GPS LOCATION TO JAKIM ZONE ---
@@ -1180,7 +1275,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.switchTab = switchTab;
 
     // MULA APLIKASI
-    init();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 });
 
 // GLOBAL HELPER UNTUK SALIN DOA
