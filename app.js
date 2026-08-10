@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         userLocation: null,
         deferredInstallPrompt: null,
         tasbihCount: parseInt(localStorage.getItem('tasbih_count') || '0', 10),
-        tasbihIndex: 0
+        tasbihIndex: 0,
+        lastNotificationKey: localStorage.getItem('last_notif_key') || null,
+        audioUnlocked: false
     };
 
     // SENARAI ZIKIR TASBIH
@@ -185,6 +187,28 @@ document.addEventListener('DOMContentLoaded', () => {
             dom.btnTestAzanAudio.classList.remove('btn-stop-active');
         }
     }
+
+    function unlockAudioOnUserGesture() {
+        if (state.audioUnlocked) return;
+        if (dom.azanAudio) {
+            dom.azanAudio.play().then(() => {
+                dom.azanAudio.pause();
+                dom.azanAudio.currentTime = 0;
+                state.audioUnlocked = true;
+                console.log('Audio Azan dibuka kunci melalui sentuhan pengguna.');
+            }).catch(() => {});
+        }
+        if (window.AudioContext || window.webkitAudioContext) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+            } catch(e){}
+        }
+    }
+    window.addEventListener('click', unlockAudioOnUserGesture, { once: true });
+    window.addEventListener('touchstart', unlockAudioOnUserGesture, { once: true });
 
     function toggleAzanPlayback() {
         if (dom.azanAudio && !dom.azanAudio.paused) {
@@ -602,12 +626,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pengiraan Perbezaan Masa (Countdown)
         const diffMs = nextPrayer.targetDate - now;
 
-        // Pemicu Notifikasi & Azan apabila masuk waktu solat (toleransi 0 hingga 2000ms)
-        const notifKey = `${nextPrayer.name}_${getLocalDateString(nextPrayer.targetDate)}_${nextPrayer.timeStr}`;
-        if (diffMs <= 2000 && diffMs >= 0 && state.lastNotificationKey !== notifKey) {
-            state.lastNotificationKey = notifKey;
-            playAzanNotification(nextPrayer.key, nextPrayer.name);
-        }
+        // Pemicu Notifikasi & Azan untuk SEMUA waktu solat yang baru dimasuki (window 0 hingga 60 saat)
+        list.forEach(p => {
+            if (!p.timeStr) return;
+            const pDate = new Date(`${todayStr}T${p.timeStr}`);
+            const diffSec = Math.floor((now - pDate) / 1000);
+            const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
+
+            if (diffSec >= 0 && diffSec <= 60 && state.lastNotificationKey !== notifKey) {
+                state.lastNotificationKey = notifKey;
+                localStorage.setItem('last_notif_key', notifKey);
+                playAzanNotification(p.key, p.name);
+            }
+        });
 
         const totalSec = Math.max(0, Math.floor(diffMs / 1000));
         const hours = Math.floor(totalSec / 3600);
