@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=2.1.0">
+    <link rel="stylesheet" href="style.css?v=2.1.2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -39,7 +39,7 @@
                 <button class="btn-icon" id="btn-open-install-guide" onclick="openPwaInstallGuide()" title="Panduan Pasang Aplikasi (Install App)">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                 </button>
-                <button class="btn-icon" id="btn-open-settings" title="Tetapan & Zon">
+                <button class="btn-icon" id="btn-open-settings" onclick="openSettingsModal()" title="Tetapan & Zon">
                     <i class="fa-solid fa-gear"></i>
                 </button>
             </div>
@@ -259,7 +259,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.1.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v2.1.2</span>
         </footer>
     </main>
 
@@ -308,11 +308,11 @@
     </div>
 
     <!-- MODAL TETAPAN NOTIFIKASI & ZON JAKIM -->
-    <div class="modal-overlay" id="modal-settings">
+    <div class="modal-overlay" id="modal-settings" onclick="if(event.target===this) closeSettingsModal()">
         <div class="modal-body">
             <div class="modal-header">
                 <div class="modal-title">Tetapan Aplikasi & Zon JAKIM</div>
-                <button class="btn-icon" id="btn-close-settings"><i class="fa-solid fa-xmark"></i></button>
+                <button class="btn-icon" id="btn-close-settings" onclick="closeSettingsModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
                 <!-- KAD LOKASI & ZON JAKIM IN SETTINGS -->
@@ -583,7 +583,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=2.1.0"></script>
+    <script src="app.js?v=2.1.2"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>

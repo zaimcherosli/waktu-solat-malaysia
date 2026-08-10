@@ -876,9 +876,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.btnTasbihSwitch) dom.btnTasbihSwitch.addEventListener('click', switchTasbihPhrase);
 
         // Notification & Settings Modal
-        if (dom.btnRequestNotif) dom.btnRequestNotif.addEventListener('click', () => openModal(dom.modalSettings));
-        if (dom.btnOpenSettings) dom.btnOpenSettings.addEventListener('click', () => openModal(dom.modalSettings));
-        if (dom.btnCloseSettings) dom.btnCloseSettings.addEventListener('click', () => closeModal(dom.modalSettings));
+        function openSettingsModal() {
+            openModal(dom.modalSettings);
+            checkNotificationStatus();
+        }
+        window.openSettingsModal = openSettingsModal;
+
+        function closeSettingsModal() {
+            closeModal(dom.modalSettings);
+        }
+        window.closeSettingsModal = closeSettingsModal;
+
+        if (dom.btnRequestNotif) dom.btnRequestNotif.addEventListener('click', openSettingsModal);
+        if (dom.btnOpenSettings) dom.btnOpenSettings.addEventListener('click', openSettingsModal);
+        if (dom.btnCloseSettings) dom.btnCloseSettings.addEventListener('click', closeSettingsModal);
 
         // Toggle Notifikasi Solat Individu
         if (dom.toggles) {
