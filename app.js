@@ -213,10 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkFirstTimeInstallGuide() {
-        // Auto-buka onboarding welcome pada kali pertama sahaja
-        const hasSeen = localStorage.getItem('hasSeenOnboarding_v1');
-        if (!hasSeen) {
-            setTimeout(() => openOnboarding(), 800);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (!isStandalone) {
+            setTimeout(() => {
+                openPwaInstallGuide();
+            }, 700);
         }
     }
 
