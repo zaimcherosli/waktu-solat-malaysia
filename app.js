@@ -599,14 +599,92 @@ document.addEventListener('DOMContentLoaded', () => {
             checkNotificationStatus();
             if (permission === 'granted') {
                 sendPushNotification('Notifikasi Solat Diaktifkan', 'Anda akan menerima pemberitahuan & alunan azan apabila masuk waktu solat.');
+                // Subscribe ke backend push server
+                subscribeToPushBackend();
             }
         });
+    }
+
+    // --- WEB PUSH BACKEND SUBSCRIPTION ---
+    const PUSH_WORKER_URL = 'https://waktu-solat-push.huzaimrosli.workers.dev';
+    const VAPID_PUBLIC_KEY = 'BASJ8OMhJFQbaFMuH84DrMVTbRuJus2_I5HcuiHRtHSsVbjwLQ5uJqqtmoauWg4637-tPrtygyuSJ33FF5Fu5-Y';
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    async function subscribeToPushBackend() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            console.log('[PushBackend] PushManager tidak disokong');
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            
+            // Check if already subscribed
+            let subscription = await registration.pushManager.getSubscription();
+            
+            if (!subscription) {
+                // Subscribe with VAPID key
+                subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
+                console.log('[PushBackend] Baru subscribe:', subscription.endpoint);
+            } else {
+                console.log('[PushBackend] Sudah subscribe:', subscription.endpoint);
+            }
+
+            // Send subscription + zone to backend
+            const response = await fetch(`${PUSH_WORKER_URL}/api/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subscription: subscription.toJSON(),
+                    zone: state.currentZone
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                console.log('[PushBackend] ✅ Subscription berjaya didaftarkan ke server');
+                localStorage.setItem('push_backend_subscribed', 'true');
+                localStorage.setItem('push_backend_zone', state.currentZone);
+            } else {
+                console.log('[PushBackend] ❌ Gagal daftar:', result.error);
+            }
+        } catch (err) {
+            console.log('[PushBackend] Error:', err.message);
+        }
+    }
+
+    // Auto re-subscribe when zone changes
+    function resubscribePushIfNeeded() {
+        const lastZone = localStorage.getItem('push_backend_zone');
+        if (lastZone && lastZone !== state.currentZone && localStorage.getItem('push_backend_subscribed') === 'true') {
+            console.log(`[PushBackend] Zone bertukar ${lastZone} → ${state.currentZone}, re-subscribe...`);
+            subscribeToPushBackend();
+        }
     }
 
     function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker didaftarkan:', reg.scope))
+                .then(reg => {
+                    console.log('Service Worker didaftarkan:', reg.scope);
+                    // Auto subscribe if already granted
+                    if (Notification.permission === 'granted') {
+                        subscribeToPushBackend();
+                    }
+                })
                 .catch(err => console.log('Service Worker gagal:', err));
         }
     }
@@ -1237,6 +1315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('jakim_zone', closestZone.code);
                 loadPrayerData(closestZone.code);
                 calculateQiblaDirection(userLat, userLng);
+                resubscribePushIfNeeded();
 
                 dom.btnGps.innerHTML = '<i class="fa-solid fa-check"></i> Berjaya!';
                 setTimeout(() => {

@@ -2,7 +2,7 @@
    PWA SERVICE WORKER - CACHING & OFFLINE ENGINE
    ========================================================================== */
 
-const CACHE_NAME = 'waktu-solat-v4.3.0';
+const CACHE_NAME = 'waktu-solat-v4.4.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -86,7 +86,11 @@ self.addEventListener('push', (event) => {
     body: data.body,
     icon: 'icons/icon-192.png',
     badge: 'icons/icon-192.png',
-    vibrate: [300, 100, 300, 100, 500]
+    vibrate: [500, 200, 500, 200, 1000],
+    tag: data.type === 'prayer' ? 'waktu-solat-prayer' : 'waktu-solat-surah',
+    renotify: true,
+    requireInteraction: true,
+    data: { url: './', type: data.type, zone: data.zone }
   };
   event.waitUntil(
     self.registration.showNotification(data.title, options)
