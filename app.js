@@ -1028,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+
         const totalSec = Math.max(0, Math.floor(diffMs / 1000));
         const hours = Math.floor(totalSec / 3600);
         const minutes = Math.floor((totalSec % 3600) / 60);
@@ -1036,6 +1037,148 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.cdHours) dom.cdHours.textContent = String(hours).padStart(2, '0');
         if (dom.cdMinutes) dom.cdMinutes.textContent = String(minutes).padStart(2, '0');
         if (dom.cdSeconds) dom.cdSeconds.textContent = String(seconds).padStart(2, '0');
+    }
+
+    // --- 5B. JADUAL TIMER TEPAT UNTUK SETIAP WAKTU SOLAT ---
+    let scheduledPrayerTimers = [];
+
+    function schedulePrayerTimers() {
+        // Bersihkan semua timer lama
+        scheduledPrayerTimers.forEach(t => clearTimeout(t));
+        scheduledPrayerTimers = [];
+
+        if (!state.prayerData) return;
+
+        const now = new Date();
+        const todayStr = getLocalDateString(now);
+        const prayers = [
+            { key: 'fajr', name: 'Subuh', timeStr: state.prayerData.fajr },
+            { key: 'dhuhr', name: 'Zohor', timeStr: state.prayerData.dhuhr },
+            { key: 'asr', name: 'Asar', timeStr: state.prayerData.asr },
+            { key: 'maghrib', name: 'Maghrib', timeStr: state.prayerData.maghrib },
+            { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha }
+        ];
+
+        prayers.forEach(p => {
+            if (!p.timeStr) return;
+            const pDate = createDateObject(now, p.timeStr);
+            const msUntil = pDate - now;
+
+            // Hanya jadualkan jika waktu solat belum tiba (masa depan)
+            if (msUntil > 0 && msUntil < 24 * 60 * 60 * 1000) {
+                const timerId = setTimeout(() => {
+                    const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
+                    if (localStorage.getItem('last_notif_key') !== notifKey) {
+                        state.lastNotificationKey = notifKey;
+                        localStorage.setItem('last_notif_key', notifKey);
+                        playAzanNotification(p.key, p.name);
+                        console.log(`[ScheduledTimer] Azan dicetuskan untuk ${p.name} pada masa tepat!`);
+                    }
+                }, msUntil);
+                scheduledPrayerTimers.push(timerId);
+                console.log(`[ScheduledTimer] ${p.name} dijadualkan dalam ${Math.round(msUntil / 60000)} minit`);
+            }
+        });
+
+        // Jadualkan juga Surah Al-Waqiah (30 min selepas Subuh) & Al-Mulk (30 min selepas Isyak)
+        if (state.prayerData.fajr) {
+            const fajrDate = createDateObject(now, state.prayerData.fajr);
+            const waqiahMs = (fajrDate.getTime() + 30 * 60 * 1000) - now.getTime();
+            if (waqiahMs > 0 && waqiahMs < 24 * 60 * 60 * 1000) {
+                const tid = setTimeout(() => {
+                    const wKey = `waqiah_${todayStr}`;
+                    if (localStorage.getItem('last_notif_waqiah') !== wKey) {
+                        localStorage.setItem('last_notif_waqiah', wKey);
+                        sendPushNotification('Surah Al-Waqiah 📖 (Masa Pagi)', 'Waktu 30 minit selepas Subuh. Mari membaca Surah Al-Waqiah pembuka rezeki!');
+                        showQuranReminderBanner('56', 'Surah Al-Waqiah 📖', '30 minit selepas Subuh. Tekan untuk membaca Surah Al-Waqiah.');
+                    }
+                }, waqiahMs);
+                scheduledPrayerTimers.push(tid);
+            }
+        }
+        if (state.prayerData.isha) {
+            const ishaDate = createDateObject(now, state.prayerData.isha);
+            const mulkMs = (ishaDate.getTime() + 30 * 60 * 1000) - now.getTime();
+            if (mulkMs > 0 && mulkMs < 24 * 60 * 60 * 1000) {
+                const tid = setTimeout(() => {
+                    const mKey = `mulk_${todayStr}`;
+                    if (localStorage.getItem('last_notif_mulk') !== mKey) {
+                        localStorage.setItem('last_notif_mulk', mKey);
+                        sendPushNotification('Surah Al-Mulk 🌙 (Masa Malam)', 'Amalan sebelum tidur 30 minit selepas Isyak. Mari membaca Surah Al-Mulk pelindung alam kubur!');
+                        showQuranReminderBanner('67', 'Surah Al-Mulk 🌙', '30 minit selepas Isyak. Tekan untuk membaca Surah Al-Mulk.');
+                    }
+                }, mulkMs);
+                scheduledPrayerTimers.push(tid);
+            }
+        }
+    }
+
+    // --- 5C. VISIBILITY API CATCH-UP (BUKA SEMULA APP) ---
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            console.log('[VisibilityAPI] App kembali aktif — semak waktu solat terlepas...');
+            // Bila buka semula app, semak semua waktu solat dalam 30 minit terakhir
+            catchUpMissedPrayers();
+            // Jadualkan semula timer untuk waktu solat akan datang
+            schedulePrayerTimers();
+            // Kemas kini jam & countdown segera
+            updateNextPrayerCountdown();
+        }
+    });
+
+    function catchUpMissedPrayers() {
+        if (!state.prayerData) return;
+
+        const now = new Date();
+        const todayStr = getLocalDateString(now);
+        const CATCHUP_WINDOW = 30 * 60; // 30 minit dalam saat
+
+        const prayers = [
+            { key: 'fajr', name: 'Subuh', timeStr: state.prayerData.fajr },
+            { key: 'dhuhr', name: 'Zohor', timeStr: state.prayerData.dhuhr },
+            { key: 'asr', name: 'Asar', timeStr: state.prayerData.asr },
+            { key: 'maghrib', name: 'Maghrib', timeStr: state.prayerData.maghrib },
+            { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha }
+        ];
+
+        prayers.forEach(p => {
+            if (!p.timeStr) return;
+            const pDate = createDateObject(now, p.timeStr);
+            const diffSec = Math.floor((now - pDate) / 1000);
+            const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
+
+            // Jika waktu solat baru berlalu (0–30 minit) dan belum di-trigger
+            if (diffSec >= 0 && diffSec <= CATCHUP_WINDOW && localStorage.getItem('last_notif_key') !== notifKey) {
+                state.lastNotificationKey = notifKey;
+                localStorage.setItem('last_notif_key', notifKey);
+                playAzanNotification(p.key, p.name);
+                console.log(`[CatchUp] Azan terlepas untuk ${p.name} (${diffSec}s lalu) — ditrigger sekarang!`);
+            }
+        });
+
+        // Catch-up Surah Al-Waqiah & Al-Mulk
+        if (state.prayerData.fajr) {
+            const fajrDate = createDateObject(now, state.prayerData.fajr);
+            const waqiahTarget = new Date(fajrDate.getTime() + 30 * 60 * 1000);
+            const diffW = Math.floor((now - waqiahTarget) / 1000);
+            const wKey = `waqiah_${todayStr}`;
+            if (diffW >= 0 && diffW <= CATCHUP_WINDOW && localStorage.getItem('last_notif_waqiah') !== wKey) {
+                localStorage.setItem('last_notif_waqiah', wKey);
+                sendPushNotification('Surah Al-Waqiah 📖 (Masa Pagi)', 'Waktu 30 minit selepas Subuh. Mari membaca Surah Al-Waqiah pembuka rezeki!');
+                showQuranReminderBanner('56', 'Surah Al-Waqiah 📖', '30 minit selepas Subuh. Tekan untuk membaca Surah Al-Waqiah.');
+            }
+        }
+        if (state.prayerData.isha) {
+            const ishaDate = createDateObject(now, state.prayerData.isha);
+            const mulkTarget = new Date(ishaDate.getTime() + 30 * 60 * 1000);
+            const diffM = Math.floor((now - mulkTarget) / 1000);
+            const mKey = `mulk_${todayStr}`;
+            if (diffM >= 0 && diffM <= CATCHUP_WINDOW && localStorage.getItem('last_notif_mulk') !== mKey) {
+                localStorage.setItem('last_notif_mulk', mKey);
+                sendPushNotification('Surah Al-Mulk 🌙 (Masa Malam)', 'Amalan sebelum tidur 30 minit selepas Isyak. Mari membaca Surah Al-Mulk pelindung alam kubur!');
+                showQuranReminderBanner('67', 'Surah Al-Mulk 🌙', '30 minit selepas Isyak. Tekan untuk membaca Surah Al-Mulk.');
+            }
+        }
     }
 
     // --- 6. JAM DIGITAL REALTIME ---
@@ -1058,6 +1201,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateClock();
         setInterval(updateClock, 1000);
+
+        // Jadualkan timer tepat untuk setiap waktu solat
+        schedulePrayerTimers();
     }
 
     // --- 7. AUTO GPS LOCATION TO JAKIM ZONE ---
