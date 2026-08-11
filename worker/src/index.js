@@ -332,15 +332,46 @@ function formatTimeStr(timeStr) {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function getCurrentMalaysiaTime() {
-  // Malaysia is UTC+8
-  const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utc + 8 * 60 * 60 * 1000);
+function getMalaysiaDateTime() {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(new Date());
+  const map = {};
+  parts.forEach(p => { if (p.type !== 'literal') map[p.type] = p.value; });
+  
+  let hour = parseInt(map.hour, 10);
+  if (hour === 24) hour = 0;
+  const hourStr = String(hour).padStart(2, '0');
+  
+  return {
+    year: map.year,
+    month: map.month,
+    day: map.day,
+    hour: hourStr,
+    minute: map.minute,
+    second: map.second,
+    dateStr: `${map.year}-${map.month}-${map.day}`,
+    timeStr: `${hourStr}:${map.minute}`,
+    totalMinutes: hour * 60 + parseInt(map.minute, 10)
+  };
 }
 
-function getMalaysiaDateStr(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+function parseMinutesFromTimeStr(timeStr) {
+  if (!timeStr) return null;
+  const parts = timeStr.split(':');
+  let h = parseInt(parts[0], 10) || 0;
+  const m = parseInt(parts[1], 10) || 0;
+  if (/pm/i.test(timeStr) && h < 12) h += 12;
+  if (/am/i.test(timeStr) && h === 12) h = 0;
+  return h * 60 + m;
 }
 
 // --- CORS HEADERS ---
@@ -372,7 +403,6 @@ export default {
           });
         }
         
-        // Use endpoint hash as key for dedup
         const subKey = `sub_${await hashEndpoint(subscription.endpoint)}`;
         
         await env.PUSH_SUBS.put(subKey, JSON.stringify({
@@ -381,7 +411,6 @@ export default {
           subscribedAt: new Date().toISOString()
         }));
         
-        // Also maintain a zone index for efficient cron lookups
         const zoneIndexKey = `zone_${zone}`;
         let zoneIndex = await env.PUSH_SUBS.get(zoneIndexKey, 'json') || [];
         if (!zoneIndex.includes(subKey)) {
@@ -389,7 +418,6 @@ export default {
           await env.PUSH_SUBS.put(zoneIndexKey, JSON.stringify(zoneIndex));
         }
         
-        // Maintain list of all zones
         let allZones = await env.PUSH_SUBS.get('all_zones', 'json') || [];
         if (!allZones.includes(zone)) {
           allZones.push(zone);
@@ -402,6 +430,49 @@ export default {
           headers: CORS_HEADERS
         });
       } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500, headers: CORS_HEADERS
+        });
+      }
+    }
+
+    // POST /api/test-push (Test Web Push dari Server ke Telefon)
+    if (url.pathname === '/api/test-push' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { endpoint, zone } = body;
+
+        let targetSubData = null;
+        if (endpoint) {
+          const subKey = `sub_${await hashEndpoint(endpoint)}`;
+          targetSubData = await env.PUSH_SUBS.get(subKey, 'json');
+        }
+
+        if (!targetSubData && zone) {
+          const zoneIndexKey = `zone_${zone}`;
+          const subKeys = await env.PUSH_SUBS.get(zoneIndexKey, 'json') || [];
+          if (subKeys.length > 0) {
+            targetSubData = await env.PUSH_SUBS.get(subKeys[subKeys.length - 1], 'json');
+          }
+        }
+
+        if (!targetSubData) {
+          return new Response(JSON.stringify({ error: 'No subscription found to send test push' }), {
+            status: 404, headers: CORS_HEADERS
+          });
+        }
+
+        const result = await sendWebPush(targetSubData.subscription, {
+          title: '✈ Ujian Push Server Cloudflare',
+          body: `Web Push dari server Cloudflare ke zon ${targetSubData.zone} berfungsi 100% sempurna!`,
+          type: 'test',
+          zone: targetSubData.zone
+        }, env);
+
+        return new Response(JSON.stringify({ success: result.success, result }), {
+          headers: CORS_HEADERS
+        });
+      } catch(err) {
         return new Response(JSON.stringify({ error: err.message }), {
           status: 500, headers: CORS_HEADERS
         });
@@ -424,13 +495,11 @@ export default {
         const subData = await env.PUSH_SUBS.get(subKey, 'json');
         
         if (subData) {
-          // Remove from zone index
           const zoneIndexKey = `zone_${subData.zone}`;
           let zoneIndex = await env.PUSH_SUBS.get(zoneIndexKey, 'json') || [];
           zoneIndex = zoneIndex.filter(k => k !== subKey);
           await env.PUSH_SUBS.put(zoneIndexKey, JSON.stringify(zoneIndex));
           
-          // Delete subscription
           await env.PUSH_SUBS.delete(subKey);
         }
         
@@ -445,10 +514,12 @@ export default {
     // GET /api/status
     if (url.pathname === '/api/status') {
       const allZones = await env.PUSH_SUBS.get('all_zones', 'json') || [];
+      const myDt = getMalaysiaDateTime();
       return new Response(JSON.stringify({
         status: 'active',
         zones: allZones,
-        time: getCurrentMalaysiaTime().toISOString()
+        time: myDt.timeStr,
+        date: myDt.dateStr
       }), { headers: CORS_HEADERS });
     }
     
@@ -459,24 +530,20 @@ export default {
   
   // --- CRON TRIGGER: RUNS EVERY MINUTE ---
   async scheduled(event, env, ctx) {
-    const myTime = getCurrentMalaysiaTime();
-    const currentHH = String(myTime.getHours()).padStart(2, '0');
-    const currentMM = String(myTime.getMinutes()).padStart(2, '0');
-    const currentTime = `${currentHH}:${currentMM}`;
-    const todayStr = getMalaysiaDateStr(myTime);
+    const myDt = getMalaysiaDateTime();
+    const currentTime = myDt.timeStr;
+    const currentTotalMin = myDt.totalMinutes;
+    const todayStr = myDt.dateStr;
     
     console.log(`[Cron] Running at ${currentTime} MYT (${todayStr})`);
     
-    // Get all active zones
     const allZones = await env.PUSH_SUBS.get('all_zones', 'json') || [];
     if (allZones.length === 0) {
       console.log('[Cron] No subscriptions found, skipping');
       return;
     }
     
-    // For each zone, check prayer times
     for (const zone of allZones) {
-      // Cache prayer times per zone per day
       const cacheKey = `cache_${zone}_${todayStr}`;
       let prayerTimes = await env.PUSH_SUBS.get(cacheKey, 'json');
       
@@ -484,7 +551,7 @@ export default {
         prayerTimes = await fetchPrayerTimes(zone);
         if (prayerTimes) {
           await env.PUSH_SUBS.put(cacheKey, JSON.stringify(prayerTimes), {
-            expirationTtl: 86400 // 24 hours
+            expirationTtl: 86400
           });
         } else {
           console.log(`[Cron] Failed to fetch prayer times for ${zone}, skipping`);
@@ -492,10 +559,8 @@ export default {
         }
       }
       
-      // Define all notification triggers
       const triggers = [];
       
-      // 5 waktu solat
       const prayerNames = {
         fajr: 'Subuh',
         dhuhr: 'Zohor',
@@ -506,46 +571,52 @@ export default {
       
       for (const [key, name] of Object.entries(prayerNames)) {
         if (!prayerTimes[key]) continue;
-        const pTime = prayerTimes[key].substring(0, 5); // HH:MM
-        if (pTime === currentTime) {
-          triggers.push({
-            type: 'prayer',
-            key: `${key}_${todayStr}`,
-            title: `🕌 Telah Masuk Waktu Solat ${name}`,
-            body: `Telah masuk waktu solat ${name} bagi zon ${zone}. Mari mendirikan solat!`
-          });
+        const pMin = parseMinutesFromTimeStr(prayerTimes[key]);
+        if (pMin !== null) {
+          const diffMin = currentTotalMin - pMin;
+          // Trigger jika masa berada dalam tetingkap 0 hingga 5 minit
+          if (diffMin >= 0 && diffMin <= 5) {
+            triggers.push({
+              type: 'prayer',
+              key: `${key}_${todayStr}`,
+              title: `🕌 Telah Masuk Waktu Solat ${name}`,
+              body: `Telah masuk waktu solat ${name} bagi zon ${zone}. Mari mendirikan solat!`
+            });
+          }
         }
       }
       
       // Surah Al-Waqiah (30 min selepas Subuh)
       if (prayerTimes.fajr) {
-        const fajrParts = prayerTimes.fajr.split(':');
-        const fajrMin = parseInt(fajrParts[0]) * 60 + parseInt(fajrParts[1]) + 30;
-        const waqiahHH = String(Math.floor(fajrMin / 60)).padStart(2, '0');
-        const waqiahMM = String(fajrMin % 60).padStart(2, '0');
-        if (`${waqiahHH}:${waqiahMM}` === currentTime) {
-          triggers.push({
-            type: 'surah',
-            key: `waqiah_${todayStr}`,
-            title: '📖 Surah Al-Waqiah (Masa Pagi)',
-            body: 'Waktu 30 minit selepas Subuh. Mari membaca Surah Al-Waqiah pembuka rezeki!'
-          });
+        const fajrMin = parseMinutesFromTimeStr(prayerTimes.fajr);
+        if (fajrMin !== null) {
+          const waqiahMin = fajrMin + 30;
+          const diffMinW = currentTotalMin - waqiahMin;
+          if (diffMinW >= 0 && diffMinW <= 5) {
+            triggers.push({
+              type: 'surah',
+              key: `waqiah_${todayStr}`,
+              title: '📖 Surah Al-Waqiah (Masa Pagi)',
+              body: 'Waktu 30 minit selepas Subuh. Mari membaca Surah Al-Waqiah pembuka rezeki!'
+            });
+          }
         }
       }
       
       // Surah Al-Mulk (30 min selepas Isyak)
       if (prayerTimes.isha) {
-        const ishaParts = prayerTimes.isha.split(':');
-        const ishaMin = parseInt(ishaParts[0]) * 60 + parseInt(ishaParts[1]) + 30;
-        const mulkHH = String(Math.floor(ishaMin / 60)).padStart(2, '0');
-        const mulkMM = String(ishaMin % 60).padStart(2, '0');
-        if (`${mulkHH}:${mulkMM}` === currentTime) {
-          triggers.push({
-            type: 'surah',
-            key: `mulk_${todayStr}`,
-            title: '🌙 Surah Al-Mulk (Masa Malam)',
-            body: 'Amalan sebelum tidur 30 minit selepas Isyak. Mari membaca Surah Al-Mulk pelindung alam kubur!'
-          });
+        const ishaMin = parseMinutesFromTimeStr(prayerTimes.isha);
+        if (ishaMin !== null) {
+          const mulkMin = ishaMin + 30;
+          const diffMinM = currentTotalMin - mulkMin;
+          if (diffMinM >= 0 && diffMinM <= 5) {
+            triggers.push({
+              type: 'surah',
+              key: `mulk_${todayStr}`,
+              title: '🌙 Surah Al-Mulk (Masa Malam)',
+              body: 'Amalan sebelum tidur 30 minit selepas Isyak. Mari membaca Surah Al-Mulk pelindung alam kubur!'
+            });
+          }
         }
       }
       

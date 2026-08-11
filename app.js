@@ -1525,12 +1525,26 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (dom.btnTestAzanAudio) dom.btnTestAzanAudio.addEventListener('click', toggleAzanPlayback);
         if (dom.btnTestPushNotif) {
-            dom.btnTestPushNotif.addEventListener('click', () => {
-                playAzanAudio();
+            dom.btnTestPushNotif.addEventListener('click', async () => {
+                playAzanAudio('Ujian');
                 sendPushNotification(
                     `Ujian: Masuk Waktu Solat`,
                     `Alunan Azan Makkah dan Push Notification waktu solat bagi zon ${state.currentZone} berfungsi dengan cemerlang!`
                 );
+                // Hantar Ujian Web Push dari Cloudflare Worker Server ke peranti telefon
+                try {
+                    if ('serviceWorker' in navigator) {
+                        const reg = await navigator.serviceWorker.ready;
+                        const sub = await reg.pushManager.getSubscription();
+                        if (sub) {
+                            fetch(`${PUSH_WORKER_URL}/api/test-push`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ endpoint: sub.endpoint, zone: state.currentZone })
+                            });
+                        }
+                    }
+                } catch(e){}
             });
         }
 
