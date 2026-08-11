@@ -6,8 +6,9 @@
 // --- WEB PUSH CRYPTO UTILITIES ---
 
 function base64UrlToUint8Array(base64Url) {
-  const padding = '='.repeat((4 - base64Url.length % 4) % 4);
-  const base64 = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
+  if (!base64Url) return new Uint8Array(0);
+  const padding = '='.repeat((4 - String(base64Url).length % 4) % 4);
+  const base64 = (String(base64Url) + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = atob(base64);
   const outputArray = new Uint8Array(rawData.length);
   for (let i = 0; i < rawData.length; ++i) {
@@ -78,7 +79,6 @@ async function createVapidJwt(endpoint, vapidSubject, vapidPrivateKeyBase64) {
   };
   
   // We need to derive x,y from the private key. Use a JWK import with the full key.
-  // Actually, for signing we need to import the private key properly.
   const keyData = await crypto.subtle.importKey(
     'raw',
     privateKeyBytes,
@@ -107,12 +107,12 @@ async function createVapidJwt(endpoint, vapidSubject, vapidPrivateKeyBase64) {
 
 // --- SIMPLIFIED WEB PUSH SEND ---
 async function sendWebPush(subscription, payload, env) {
-  const vapidSubject = env.VAPID_SUBJECT;
-  const vapidPublicKey = env.VAPID_PUBLIC_KEY;
-  const vapidPrivateKey = env.VAPID_PRIVATE_KEY;
+  const vapidSubject = (env && env.VAPID_SUBJECT) || "mailto:zaimcherosli@gmail.com";
+  const vapidPublicKey = (env && env.VAPID_PUBLIC_KEY) || "BASJ8OMhJFQbaFMuH84DrMVTbRuJus2_I5HcuiHRtHSsVbjwLQ5uJqqtmoauWg4637-tPrtygyuSJ33FF5Fu5-Y";
+  const vapidPrivateKey = (env && env.VAPID_PRIVATE_KEY) || "evMhjTrIHhT4KUkaZYZPY1jwQ1EpxmS7Au8u-Oz5dYA";
   
-  if (!subscription || !subscription.endpoint) {
-    console.log('[Push] Invalid subscription, skipping');
+  if (!subscription || !subscription.endpoint || !subscription.keys || !subscription.keys.p256dh || !subscription.keys.auth) {
+    console.log('[Push] Invalid or incomplete subscription keys, skipping');
     return { success: false, reason: 'invalid_subscription' };
   }
 
