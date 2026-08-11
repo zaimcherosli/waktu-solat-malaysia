@@ -980,14 +980,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pengiraan Perbezaan Masa (Countdown)
         const diffMs = nextPrayer.targetDate - now;
 
-        // Pemicu Notifikasi & Azan untuk SEMUA waktu solat yang baru dimasuki (window 0 hingga 60 saat)
+        // Pemicu Notifikasi & Azan untuk SEMUA waktu solat (window 0 hingga 300 saat / 5 minit)
         list.forEach(p => {
             if (!p.timeStr) return;
             const pDate = createDateObject(now, p.timeStr);
             const diffSec = Math.floor((now - pDate) / 1000);
             const notifKey = `${p.key}_${todayStr}_${p.timeStr}`;
 
-            if (diffSec >= 0 && diffSec <= 60 && state.lastNotificationKey !== notifKey) {
+            if (diffSec >= 0 && diffSec <= 300 && localStorage.getItem('last_notif_key') !== notifKey) {
                 state.lastNotificationKey = notifKey;
                 localStorage.setItem('last_notif_key', notifKey);
                 playAzanNotification(p.key, p.name);
@@ -1004,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffSecWaqiah = Math.floor((now - waqiahTarget) / 1000);
             const waqiahNotifKey = `waqiah_${todayStr}`;
 
-            if (diffSecWaqiah >= 0 && diffSecWaqiah <= 120 && localStorage.getItem('last_notif_waqiah') !== waqiahNotifKey) {
+            if (diffSecWaqiah >= 0 && diffSecWaqiah <= 300 && localStorage.getItem('last_notif_waqiah') !== waqiahNotifKey) {
                 localStorage.setItem('last_notif_waqiah', waqiahNotifKey);
                 sendPushNotification(
                     'Surah Al-Waqiah 📖 (Masa Pagi)',
@@ -1018,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffSecMulk = Math.floor((now - mulkTarget) / 1000);
             const mulkNotifKey = `mulk_${todayStr}`;
 
-            if (diffSecMulk >= 0 && diffSecMulk <= 120 && localStorage.getItem('last_notif_mulk') !== mulkNotifKey) {
+            if (diffSecMulk >= 0 && diffSecMulk <= 300 && localStorage.getItem('last_notif_mulk') !== mulkNotifKey) {
                 localStorage.setItem('last_notif_mulk', mulkNotifKey);
                 sendPushNotification(
                     'Surah Al-Mulk 🌙 (Masa Malam)',
