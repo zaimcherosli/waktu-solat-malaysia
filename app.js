@@ -686,6 +686,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 })
                 .catch(err => console.log('Service Worker gagal:', err));
+
+            // Pendengar mesej daripada Service Worker apabila notifikasi ditekan di notification bar
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.action === 'play_azan') {
+                    console.log('[App] Menerima arahan play_azan daripada notifikasi telefon!');
+                    let pName = 'Solat';
+                    if (event.data.title && event.data.title.includes('Solat')) {
+                        pName = event.data.title.replace(/.*Solat\s*/, '').trim() || 'Solat';
+                    }
+                    playAzanAudio(pName);
+                }
+            });
+        }
+
+        if (window.location.search.includes('play_azan=true')) {
+            setTimeout(() => {
+                playAzanAudio('Solat');
+            }, 800);
         }
     }
 

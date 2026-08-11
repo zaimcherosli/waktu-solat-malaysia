@@ -2,7 +2,7 @@
    PWA SERVICE WORKER - CACHING & OFFLINE ENGINE
    ========================================================================== */
 
-const CACHE_NAME = 'waktu-solat-v4.5.0';
+const CACHE_NAME = 'waktu-solat-v4.6.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -67,12 +67,21 @@ self.addEventListener('fetch', (event) => {
 // 4. NOTIFICATION CLICK & PUSH HANDLERS
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const notifTitle = event.notification ? event.notification.title : '';
+  
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if ('focus' in client) return client.focus();
+        if ('focus' in client) {
+          try {
+            client.postMessage({ action: 'play_azan', title: notifTitle });
+          } catch(e){}
+          return client.focus();
+        }
       }
-      if (clients.openWindow) return clients.openWindow('./');
+      if (clients.openWindow) {
+        return clients.openWindow('./?play_azan=true');
+      }
     })
   );
 });
