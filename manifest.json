@@ -1,7 +1,7 @@
 {
-  "name": "Waktu Solat Malaysia (JAKIM API)",
+  "name": "Waktu Solat MY",
   "short_name": "Solat MY",
-  "description": "Aplikasi Waktu Solat Malaysia berasaskan data rasmi JAKIM e-Solat dengan mod offline PWA.",
+  "description": "Panduan Waktu Solat harian, pengesanan lokasi GPS, kompas kiblat tepat, dan tasbih digital.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#06140e",
