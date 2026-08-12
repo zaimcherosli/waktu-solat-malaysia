@@ -12,7 +12,6 @@ id = "ebed209a44b149b2b9a0210ded557883"
 [vars]
 VAPID_SUBJECT = "mailto:zaimcherosli@gmail.com"
 VAPID_PUBLIC_KEY = "BASJ8OMhJFQbaFMuH84DrMVTbRuJus2_I5HcuiHRtHSsVbjwLQ5uJqqtmoauWg4637-tPrtygyuSJ33FF5Fu5-Y"
-VAPID_PRIVATE_KEY = "evMhjTrIHhT4KUkaZYZPY1jwQ1EpxmS7Au8u-Oz5dYA"
 
 
 

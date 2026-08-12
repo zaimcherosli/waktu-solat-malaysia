@@ -109,7 +109,12 @@ async function createVapidJwt(endpoint, vapidSubject, vapidPrivateKeyBase64) {
 async function sendWebPush(subscription, payload, env) {
   const vapidSubject = (env && env.VAPID_SUBJECT) || "mailto:zaimcherosli@gmail.com";
   const vapidPublicKey = (env && env.VAPID_PUBLIC_KEY) || "BASJ8OMhJFQbaFMuH84DrMVTbRuJus2_I5HcuiHRtHSsVbjwLQ5uJqqtmoauWg4637-tPrtygyuSJ33FF5Fu5-Y";
-  const vapidPrivateKey = (env && env.VAPID_PRIVATE_KEY) || "evMhjTrIHhT4KUkaZYZPY1jwQ1EpxmS7Au8u-Oz5dYA";
+  const vapidPrivateKey = env && env.VAPID_PRIVATE_KEY;
+  
+  if (!vapidPrivateKey) {
+    console.log('[Push] Missing VAPID_PRIVATE_KEY secret');
+    return { success: false, reason: 'missing_vapid_key' };
+  }
   
   if (!subscription || !subscription.endpoint || !subscription.keys || !subscription.keys.p256dh || !subscription.keys.auth) {
     console.log('[Push] Invalid or incomplete subscription keys, skipping');
