@@ -210,14 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try { updateTasbihUI(); } catch (e) { console.error('updateTasbihUI:', e); }
         try { loadQuranSurah(localStorage.getItem('last_selected_surah') || '67'); } catch (e) { console.error('loadQuranSurah:', e); }
         try { registerServiceWorker(); } catch (e) { console.error('registerServiceWorker:', e); }
-        // [TEST MODE] &clear=1 — bersihkan SEKALI sahaja semasa page load (bukan setiap saat)
-        try {
-            const _p = new URLSearchParams(window.location.search);
-            if (_p.get('clear') === '1') {
-                localStorage.removeItem('last_notif_key');
-                console.log('[TestMode] 🧹 last_notif_key dibersihkan sekali masa page load');
-            }
-        } catch(e) {}
     }
 
     function checkFirstTimeInstallGuide() {
@@ -226,9 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('pwa_installed', 'true');
         }
         const isInstalled = localStorage.getItem('pwa_installed') === 'true';
+        const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding_v1') === 'true';
         
-        // Jangan buka onboarding jika pengguna telah pasang PWA atau buka dalam mod standalone
-        if (!isStandalone && !isInstalled) {
+        // Popup onboarding HANYA dibuka untuk pelawat kali pertama dalam browser biasa (bukan PWA & belum pernah buka)
+        if (!isStandalone && !isInstalled && !hasSeenOnboarding) {
             setTimeout(() => {
                 openOnboarding();
             }, 700);
@@ -1035,16 +1028,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
 
-    // Helper: Baca ?test_time=HH:MM dari URL untuk simulasi masa ujian (kekalkan sistem asal)
-    // NOTA: &clear=1 telah dipindah ke init() supaya hanya berlaku SEKALI masa page load
-    function getTestNow() {
-        return new Date(); // Guna masa sebenar — test prayer diinject ke prayer list
-    }
-
     function updateNextPrayerCountdown() {
         if (!state.prayerData) return;
 
-        const now = getTestNow();
+        const now = new Date();
         const todayStr = getLocalDateString(now);
 
         const list = [
@@ -1055,14 +1042,6 @@ document.addEventListener('DOMContentLoaded', () => {
             { key: 'maghrib', name: 'Maghrib', timeStr: state.prayerData.maghrib, card: dom.cards.maghrib },
             { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha, card: dom.cards.isha }
         ];
-
-        // [TEST MODE] Inject waktu ujian palsu jika ?test_time= dikesan dalam URL
-        const _testParams = new URLSearchParams(window.location.search);
-        const _testTime = _testParams.get('test_time');
-        if (_testTime && /^\d{1,2}:\d{2}$/.test(_testTime)) {
-            list.push({ key: 'test_azan', name: '🧪 Ujian Azan', timeStr: _testTime, card: null });
-            console.log(`[TestMode] 🧪 Waktu ujian palsu ditambah: ${_testTime}`);
-        }
 
         // Susun senarai mengikut kronologi masa
         list.sort((a, b) => {
@@ -1189,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!state.prayerData) return;
 
-        const now = getTestNow();
+        const now = new Date();
         const todayStr = getLocalDateString(now);
         const prayers = [
             { key: 'fajr', name: 'Subuh', timeStr: state.prayerData.fajr },
@@ -1269,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function catchUpMissedPrayers() {
         if (!state.prayerData) return;
 
-        const now = getTestNow();
+        const now = new Date();
         const todayStr = getLocalDateString(now);
         const CATCHUP_WINDOW = 30 * 60; // 30 minit dalam saat
 
