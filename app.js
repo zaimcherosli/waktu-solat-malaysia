@@ -1019,10 +1019,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
 
-    // Helper: Baca ?test_time=HH:MM dari URL untuk simulasi masa ujian (kekalkan sistem asal)
+    // Helper: Baca ?test_time=HH:MM&clear=1 dari URL untuk simulasi masa ujian (kekalkan sistem asal)
     function getTestNow() {
         const params = new URLSearchParams(window.location.search);
         const testTime = params.get('test_time');
+        
+        // &clear=1 → auto-clear last_notif_key supaya notifikasi boleh trigger semula (mobile-friendly)
+        if (params.get('clear') === '1') {
+            localStorage.removeItem('last_notif_key');
+            console.log('[TestMode] 🧹 last_notif_key telah dibersihkan untuk ujian semula!');
+        }
+        
         if (testTime && /^\d{1,2}:\d{2}$/.test(testTime)) {
             const [h, m] = testTime.split(':').map(Number);
             const fake = new Date();
