@@ -1018,10 +1018,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
+
+    // Helper: Baca ?test_time=HH:MM dari URL untuk simulasi masa ujian (kekalkan sistem asal)
+    function getTestNow() {
+        const params = new URLSearchParams(window.location.search);
+        const testTime = params.get('test_time');
+        if (testTime && /^\d{1,2}:\d{2}$/.test(testTime)) {
+            const [h, m] = testTime.split(':').map(Number);
+            const fake = new Date();
+            fake.setHours(h, m, 0, 0);
+            console.log(`[TestMode] ⚠️ Masa Ujian Aktif: ${testTime} (bukan masa sebenar!)`);
+            return fake;
+        }
+        return new Date();
+    }
+
     function updateNextPrayerCountdown() {
         if (!state.prayerData) return;
 
-        const now = new Date();
+        const now = getTestNow();
         const todayStr = getLocalDateString(now);
 
         const list = [
@@ -1151,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!state.prayerData) return;
 
-        const now = new Date();
+        const now = getTestNow();
         const todayStr = getLocalDateString(now);
         const prayers = [
             { key: 'fajr', name: 'Subuh', timeStr: state.prayerData.fajr },
@@ -1231,7 +1246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function catchUpMissedPrayers() {
         if (!state.prayerData) return;
 
-        const now = new Date();
+        const now = getTestNow();
         const todayStr = getLocalDateString(now);
         const CATCHUP_WINDOW = 30 * 60; // 30 minit dalam saat
 
