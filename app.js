@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return outputArray;
     }
 
-    async function subscribeToPushBackend() {
+    async function subscribeToPushBackend(forceRenew = false) {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             console.log('[PushBackend] PushManager tidak disokong');
             return;
@@ -646,15 +646,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check if already subscribed
             let subscription = await registration.pushManager.getSubscription();
             
+            // Force renew: unsubscribe lama dan buat subscription baru
+            if (subscription && forceRenew) {
+                console.log('[PushBackend] Force renew: unsubscribe subscription lama...');
+                await subscription.unsubscribe();
+                subscription = null;
+                localStorage.removeItem('push_backend_subscribed');
+            }
+            
             if (!subscription) {
-                // Subscribe with VAPID key
+                // Subscribe with VAPID key (fresh)
                 subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
                 });
-                console.log('[PushBackend] Baru subscribe:', subscription.endpoint);
+                console.log('[PushBackend] ✅ Fresh subscription berjaya:', subscription.endpoint);
             } else {
-                console.log('[PushBackend] Sudah subscribe:', subscription.endpoint);
+                console.log('[PushBackend] Subscription sedia ada:', subscription.endpoint);
             }
 
             // Send subscription + zone to backend
@@ -1580,18 +1588,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
                 // Hantar Ujian Web Push dari Cloudflare Worker Server ke peranti telefon
                 try {
+                    // Pastikan subscription didaftarkan segar
+                    await subscribeToPushBackend(true);
                     if ('serviceWorker' in navigator) {
                         const reg = await navigator.serviceWorker.ready;
                         const sub = await reg.pushManager.getSubscription();
                         if (sub) {
-                            fetch(`${PUSH_WORKER_URL}/api/test-push`, {
+                            const res = await fetch(`${PUSH_WORKER_URL}/api/test-push`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ endpoint: sub.endpoint, zone: state.currentZone })
                             });
+                            const data = await res.json();
+                            if (data && data.result && data.result.reason === 'expired') {
+                                console.log('[TestPush] Subscription expired, renewing now...');
+                                await subscribeToPushBackend(true);
+                            }
                         }
                     }
-                } catch(e){}
+                } catch(e){ console.error('[TestPush] Error:', e); }
             });
         }
 
