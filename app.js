@@ -1064,6 +1064,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`[TestMode] 🧪 Waktu ujian palsu ditambah: ${_testTime}`);
         }
 
+        // Susun senarai mengikut kronologi masa
+        list.sort((a, b) => {
+            if (!a.timeStr) return 1;
+            if (!b.timeStr) return -1;
+            return createDateObject(now, a.timeStr) - createDateObject(now, b.timeStr);
+        });
+
         // Buang highlight aktif & lencana SEKARANG terdahulu
         Object.values(dom.cards).forEach(c => {
             if (!c) return;
