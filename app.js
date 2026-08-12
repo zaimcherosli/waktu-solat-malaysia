@@ -214,7 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkFirstTimeInstallGuide() {
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        if (!isStandalone) {
+        if (isStandalone) {
+            localStorage.setItem('pwa_installed', 'true');
+        }
+        const isInstalled = localStorage.getItem('pwa_installed') === 'true';
+        
+        // Jangan buka onboarding jika pengguna telah pasang PWA atau buka dalam mod standalone
+        if (!isStandalone && !isInstalled) {
             setTimeout(() => {
                 openOnboarding();
             }, 700);
