@@ -210,6 +210,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try { updateTasbihUI(); } catch (e) { console.error('updateTasbihUI:', e); }
         try { loadQuranSurah(localStorage.getItem('last_selected_surah') || '67'); } catch (e) { console.error('loadQuranSurah:', e); }
         try { registerServiceWorker(); } catch (e) { console.error('registerServiceWorker:', e); }
+        // [TEST MODE] &clear=1 — bersihkan SEKALI sahaja semasa page load (bukan setiap saat)
+        try {
+            const _p = new URLSearchParams(window.location.search);
+            if (_p.get('clear') === '1') {
+                localStorage.removeItem('last_notif_key');
+                console.log('[TestMode] 🧹 last_notif_key dibersihkan sekali masa page load');
+            }
+        } catch(e) {}
     }
 
     function checkFirstTimeInstallGuide() {
@@ -1019,25 +1027,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. ENGIN COUNTDOWN & SOLAT SETERUSNYA ---
 
-    // Helper: Baca ?test_time=HH:MM&clear=1 dari URL untuk simulasi masa ujian (kekalkan sistem asal)
+    // Helper: Baca ?test_time=HH:MM dari URL untuk simulasi masa ujian (kekalkan sistem asal)
+    // NOTA: &clear=1 telah dipindah ke init() supaya hanya berlaku SEKALI masa page load
     function getTestNow() {
-        const params = new URLSearchParams(window.location.search);
-        const testTime = params.get('test_time');
-        
-        // &clear=1 → auto-clear last_notif_key supaya notifikasi boleh trigger semula (mobile-friendly)
-        if (params.get('clear') === '1') {
-            localStorage.removeItem('last_notif_key');
-            console.log('[TestMode] 🧹 last_notif_key telah dibersihkan untuk ujian semula!');
-        }
-        
-        if (testTime && /^\d{1,2}:\d{2}$/.test(testTime)) {
-            const [h, m] = testTime.split(':').map(Number);
-            const fake = new Date();
-            fake.setHours(h, m, 0, 0);
-            console.log(`[TestMode] ⚠️ Masa Ujian Aktif: ${testTime} (bukan masa sebenar!)`);
-            return fake;
-        }
-        return new Date();
+        return new Date(); // Guna masa sebenar — test prayer diinject ke prayer list
     }
 
     function updateNextPrayerCountdown() {
