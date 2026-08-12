@@ -1072,6 +1072,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Jika sekarang di antara 00:00 tengah malam hingga sebelum Subuh, waktu aktif masih Isyak
+        if (!currentActivePrayer) {
+            currentActivePrayer = list.find(p => p.key === 'isha') || list[list.length - 1];
+        }
+
         // Jika melepasi Isyak malam ini, solat seterusnya ialah Subuh esok
         if (!nextPrayer) {
             nextPrayer = list[0];
