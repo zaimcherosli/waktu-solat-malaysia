@@ -1055,6 +1055,14 @@ document.addEventListener('DOMContentLoaded', () => {
             { key: 'isha', name: 'Isyak', timeStr: state.prayerData.isha, card: dom.cards.isha }
         ];
 
+        // [TEST MODE] Inject waktu ujian palsu jika ?test_time= dikesan dalam URL
+        const _testParams = new URLSearchParams(window.location.search);
+        const _testTime = _testParams.get('test_time');
+        if (_testTime && /^\d{1,2}:\d{2}$/.test(_testTime)) {
+            list.push({ key: 'test_azan', name: '🧪 Ujian Azan', timeStr: _testTime, card: null });
+            console.log(`[TestMode] 🧪 Waktu ujian palsu ditambah: ${_testTime}`);
+        }
+
         // Buang highlight aktif & lencana SEKARANG terdahulu
         Object.values(dom.cards).forEach(c => {
             if (!c) return;
