@@ -516,6 +516,54 @@ export default {
       }
     }
     
+    // POST /api/track-install (Jejak PWA Installation)
+    if (url.pathname === '/api/track-install' && request.method === 'POST') {
+      try {
+        const body = await request.json() || {};
+        const zone = body.zone || 'UNKNOWN';
+        const installsCount = (parseInt(await env.PUSH_SUBS.get('stats_pwa_installs'), 10) || 0) + 1;
+        await env.PUSH_SUBS.put('stats_pwa_installs', String(installsCount));
+        
+        console.log(`[TrackInstall] PWA Install recorded for zone ${zone}. Total installs: ${installsCount}`);
+        return new Response(JSON.stringify({ success: true, totalPwaInstalls: installsCount }), {
+          headers: CORS_HEADERS
+        });
+      } catch(err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: CORS_HEADERS });
+      }
+    }
+
+    // GET /api/stats (Statistik Pengguna & PWA Install Dashboard)
+    if (url.pathname === '/api/stats') {
+      try {
+        const allZones = await env.PUSH_SUBS.get('all_zones', 'json') || [];
+        let totalSubscribers = 0;
+        const breakdownByZone = {};
+        
+        for (const z of allZones) {
+          const subKeys = await env.PUSH_SUBS.get(`zone_${z}`, 'json') || [];
+          breakdownByZone[z] = subKeys.length;
+          totalSubscribers += subKeys.length;
+        }
+        
+        const totalPwaInstalls = parseInt(await env.PUSH_SUBS.get('stats_pwa_installs'), 10) || 0;
+        const myDt = getMalaysiaDateTime();
+        
+        return new Response(JSON.stringify({
+          status: 'active',
+          appName: 'Waktu Solat MY',
+          totalSubscribers: totalSubscribers,
+          totalPwaInstalls: totalPwaInstalls,
+          activeZonesCount: allZones.length,
+          activeZones: allZones,
+          breakdownByZone: breakdownByZone,
+          serverTimeMYT: `${myDt.dateStr} ${myDt.timeStr}`
+        }, null, 2), { headers: CORS_HEADERS });
+      } catch(err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: CORS_HEADERS });
+      }
+    }
+
     // GET /api/status
     if (url.pathname === '/api/status') {
       const allZones = await env.PUSH_SUBS.get('all_zones', 'json') || [];

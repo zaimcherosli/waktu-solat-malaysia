@@ -1646,6 +1646,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.deferredInstallPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             if (dom.pwaBanner) dom.pwaBanner.classList.remove('active');
+                            trackPwaInstallation();
                         }
                         state.deferredInstallPrompt = null;
                     });
@@ -1653,6 +1654,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    function trackPwaInstallation() {
+        if (localStorage.getItem('pwa_install_tracked') === 'true') return;
+        localStorage.setItem('pwa_install_tracked', 'true');
+        fetch(`${PUSH_WORKER_URL}/api/track-install`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ zone: state.currentZone })
+        }).catch(() => {});
+    }
+
+    window.addEventListener('appinstalled', () => {
+        console.log('[PWA] App successfully installed!');
+        localStorage.setItem('pwa_installed', 'true');
+        trackPwaInstallation();
+        if (dom.pwaBanner) dom.pwaBanner.classList.remove('active');
+    });
 
     // --- 13. AL-QURAN DIGITAL READER (SURAH AL-MULK & AL-WAQIAH) ---
     async function loadQuranSurah(surahNum = '67') {
