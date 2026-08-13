@@ -2,7 +2,7 @@
    PWA SERVICE WORKER - CACHING & OFFLINE ENGINE
    ========================================================================== */
 
-const CACHE_NAME = 'waktu-solat-v5.5.0';
+const CACHE_NAME = 'waktu-solat-v6.0.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -45,10 +45,30 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. FETCH STRATEGY: NETWORK-FIRST WITH CACHE FALLBACK (FRESH DESIGN ASSURED)
+// 3. FETCH STRATEGY: STALE-WHILE-REVALIDATE FOR ASSETS (INSTANT RENDER ON MOBILE DATA)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // Untuk fail CSS, JS & Ikon: Guna Cache-First supaya paparan cantik 100% muncul serta-merta walau di Mobile Data perlahan
+  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js') || url.pathname.includes('/icons/')) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        }).catch(() => {});
+        return cachedResponse || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  // Untuk HTML: Network-first dengan cache fallback
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
