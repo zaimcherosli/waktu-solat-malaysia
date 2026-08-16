@@ -613,7 +613,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- WEB PUSH BACKEND SUBSCRIPTION ---
-    const PUSH_WORKER_URL = 'https://waktu-solat-push.huzaimrosli.workers.dev';
+    // Gunakan same-origin /api jika di production untuk elak isu CORS & sekatan DNS Telco Mobile Data
+    const PUSH_WORKER_URL = window.location.origin.includes('localhost') ? 'https://waktu-solat-push.huzaimrosli.workers.dev' : '';
     const VAPID_PUBLIC_KEY = 'BASJ8OMhJFQbaFMuH84DrMVTbRuJus2_I5HcuiHRtHSsVbjwLQ5uJqqtmoauWg4637-tPrtygyuSJ33FF5Fu5-Y';
 
     function urlBase64ToUint8Array(base64String) {
@@ -842,13 +843,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {}
         }
 
-        // Endpoint 1: e-Solat Official JAKIM
+        // Endpoint 1: Edge Proxy e-Solat (Pages Function)
+        const edgeProxyUrl = `/api/esolat?zone=${zoneCode}`;
+        // Endpoint 2: e-Solat Official JAKIM Direct
         const officialUrl = `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&period=today&zone=${zoneCode}`;
-        // Endpoint 2: Fallback Waktu Solat App Proxy
+        // Endpoint 3: Fallback Waktu Solat App Proxy
         const fallbackUrl = `https://api.waktusolat.app/v2/solat/${zoneCode}`;
 
         try {
-            let res = await fetch(officialUrl).catch(() => null);
+            let res = await fetch(edgeProxyUrl).catch(() => null);
             let data = null;
 
             if (res && res.ok) {
@@ -856,10 +859,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!data || !data.prayerTime || data.prayerTime.length === 0) {
+                res = await fetch(officialUrl).catch(() => null);
+                if (res && res.ok) data = await res.json();
+            }
+
+            if (!data || !data.prayerTime || data.prayerTime.length === 0) {
                 // Gunakan Fallback API
                 console.log('Utilizing secondary Waktu Solat CORS API fallback...');
-                const resFallback = await fetch(fallbackUrl);
-                if (resFallback.ok) {
+                const resFallback = await fetch(fallbackUrl).catch(() => null);
+                if (resFallback && resFallback.ok) {
                     const fallbackJson = await resFallback.json();
                     data = formatFallbackData(fallbackJson, zoneCode);
                 }
