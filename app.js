@@ -693,15 +693,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
+            let isUpdating = false;
+
+            function applyUpdate(waitingSW) {
+                if (isUpdating) return;
+                isUpdating = true;
+                console.log('⚡ Mengaktifkan kemas kini versi baharu secara automatik...');
+                if (waitingSW) {
+                    waitingSW.postMessage({ type: 'SKIP_WAITING' });
+                }
+            }
+
             navigator.serviceWorker.register('sw.js')
                 .then(reg => {
                     console.log('Service Worker didaftarkan:', reg.scope);
+
+                    // Semak kemas kini serta-merta pada permulaan & setiap kali buka semula tab/app
+                    reg.update().catch(() => {});
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible') {
+                            reg.update().catch(() => {});
+                        }
+                    });
+
+                    // Pengesanan Versi Baharu Automatik (Seamless Auto-Update)
+                    reg.addEventListener('updatefound', () => {
+                        const newSW = reg.installing;
+                        if (!newSW) return;
+
+                        newSW.addEventListener('statechange', () => {
+                            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('[App] Versi baharu sedia dipasang, auto-aktifkan sekarang...');
+                                applyUpdate(newSW);
+                            }
+                        });
+                    });
+
+                    // Jika ada Service Worker baharu sedang menunggu, aktifkan serta-merta
+                    if (reg.waiting && navigator.serviceWorker.controller) {
+                        applyUpdate(reg.waiting);
+                    }
+
                     // Auto subscribe if already granted
                     if (Notification.permission === 'granted') {
                         subscribeToPushBackend();
                     }
                 })
                 .catch(err => console.log('Service Worker gagal:', err));
+
+            // Apabila Service Worker baharu mengambil alih, muat semula paparan secara automatik
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                showUpdateToast('✨ Mengemas kini ke versi terkini...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            });
 
             // Pendengar mesej daripada Service Worker apabila notifikasi ditekan di notification bar
             navigator.serviceWorker.addEventListener('message', (event) => {
@@ -721,6 +770,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 playAzanAudio('Solat');
             }, 800);
         }
+    }
+
+    function showUpdateToast(msg) {
+        const existing = document.querySelector('.auto-update-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'auto-update-toast';
+        toast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, #064e3b, #059669); color:#fff; padding:10px 20px; border-radius:30px; font-weight:700; font-size:0.85rem; box-shadow:0 8px 24px rgba(0,0,0,0.3); z-index:99999; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.2); animation:fadeInDown 0.3s ease;';
+        toast.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>${msg}</span>`;
+        document.body.appendChild(toast);
     }
 
     function showAppNotificationToast(title, body) {
