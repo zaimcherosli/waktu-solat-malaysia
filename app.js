@@ -1911,3 +1911,57 @@ window.copyDoaText = function(btn) {
         alert('Teks disalin:\n' + fullText);
     }
 };
+
+// GLOBAL HELPER UNTUK KONGSI APLIKASI
+window.shareApp = function() {
+    const shareData = {
+        title: 'Waktu Solat MY',
+        text: 'Panduan Waktu Solat harian, pengesanan lokasi GPS, kompas kiblat tepat, dan tasbih digital.',
+        url: 'https://waktusolatmy.pages.dev/'
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData).catch(err => {
+            if (err.name !== 'AbortError') {
+                window.copyAppLink();
+            }
+        });
+    } else {
+        window.copyAppLink();
+    }
+};
+
+window.copyAppLink = function(btnEl) {
+    const url = 'https://waktusolatmy.pages.dev/';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            showShareToast('Pautan berjaya disalin!');
+            if (btnEl) {
+                const origHtml = btnEl.innerHTML;
+                btnEl.innerHTML = '<i class="fa-solid fa-check"></i> Disalin!';
+                setTimeout(() => { btnEl.innerHTML = origHtml; }, 2000);
+            }
+        }).catch(() => {
+            window.open(`https://wa.me/?text=${encodeURIComponent('Waktu Solat MY: https://waktusolatmy.pages.dev/')}`, '_blank');
+        });
+    } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent('Waktu Solat MY: https://waktusolatmy.pages.dev/')}`, '_blank');
+    }
+};
+
+function showShareToast(msg) {
+    const existing = document.querySelector('.share-toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'share-toast-notification';
+    toast.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#059669; color:#fff; padding:10px 20px; border-radius:30px; font-weight:700; font-size:0.85rem; box-shadow:0 8px 24px rgba(0,0,0,0.3); z-index:99999; display:flex; align-items:center; gap:8px; pointer-events:none;';
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${msg}</span>`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.4s ease';
+        setTimeout(() => toast.remove(), 400);
+    }, 2000);
+}
+

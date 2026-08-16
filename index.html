@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheet & Icons -->
-    <link rel="stylesheet" href="style.css?v=6.0.0">
+    <link rel="stylesheet" href="style.css?v=6.2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -282,7 +282,7 @@
 
         <!-- FOOTER WATERMARK CREDIT -->
         <footer class="app-credit-footer">
-            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v6.0.0</span>
+            Design by &nbsp;<a href="https://kwikezee.my" target="_blank" rel="noopener"><b><u>kwikezee studio</u></b></a>&nbsp; <span class="version-badge">v6.2.0</span>
         </footer>
     </main>
 
@@ -616,6 +616,16 @@
                     <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
                         Halakan kamera telefon anda pada Kod QR di atas untuk terus membuka & memasang <b>Waktu Solat MY</b>!
                     </div>
+
+                    <!-- BUTANG KONGSI & SALIN PAUTAN -->
+                    <div style="display:flex; gap:8px; width:100%; max-width:280px; margin-top:4px;">
+                        <button type="button" onclick="shareApp()" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg, var(--accent-emerald, #059669), #10b981); color:#fff; border:none; padding:10px 14px; border-radius:12px; font-weight:700; font-size:0.82rem; cursor:pointer; box-shadow:0 4px 12px rgba(5,150,105,0.25); transition:transform 0.15s ease;">
+                            <i class="fa-solid fa-share-nodes"></i> Kongsi
+                        </button>
+                        <button type="button" onclick="copyAppLink(this)" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border-color); padding:10px 14px; border-radius:12px; font-weight:700; font-size:0.82rem; cursor:pointer; transition:background 0.15s ease;">
+                            <i class="fa-regular fa-copy"></i> Salin Pautan
+                        </button>
+                    </div>
                 </div>
 
                 <!-- BAHAGIAN 1: ANDROID (KAT ATAS) -->
@@ -676,7 +686,7 @@
 
     <!-- SCRIPTS -->
     <script src="jakim-zones.js"></script>
-    <script src="app.js?v=6.0.0"></script>
+    <script src="app.js?v=6.2.0"></script>
 
     <!-- GLOBAL INLINE PWA INSTALL GUIDE HANDLER -->
     <script>
